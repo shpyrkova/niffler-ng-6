@@ -1,20 +1,35 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class MainPage {
-  private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
+    private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
+    public final SelenideElement statisticsHeader = $(byText("Statistics"));
+    public final SelenideElement historyOfSpendingsHeader = $(byText("History of Spendings"));
+    private final SelenideElement profileMenuButton = $x("//*[@id=\"root\"]/header/div/div[2]/button");
+    private final SelenideElement profileLink = $("[href='/profile']");
 
-  public EditSpendingPage editSpending(String spendingDescription) {
-    tableRows.find(text(spendingDescription)).$$("td").get(5).click();
-    return new EditSpendingPage();
-  }
+    public EditSpendingPage editSpending(String spendingDescription) {
+        tableRows.find(text(spendingDescription)).$$("td").get(5).click();
+        return new EditSpendingPage();
+    }
 
-  public void checkThatTableContainsSpending(String spendingDescription) {
-    tableRows.find(text(spendingDescription)).should(visible);
-  }
+    public void clickProfileMenuButton() {
+        profileMenuButton.click();
+    }
+
+    public void clickProfileLink() {
+        profileLink.click();
+    }
+
+    public void checkThatTableContainsSpending(String spendingDescription) {
+        tableRows.find(text(spendingDescription)).should(visible);
+    }
 }
