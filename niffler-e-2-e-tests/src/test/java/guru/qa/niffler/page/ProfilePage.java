@@ -1,78 +1,55 @@
 package guru.qa.niffler.page;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
-import static com.codeborne.selenide.Condition.attributeMatching;
-import static com.codeborne.selenide.Condition.disabled;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.executeJavaScript;
 
 public class ProfilePage {
+    private final SelenideElement avatarInput = $("#image__input");
+    private final SelenideElement usernameInput = $("#username");
+    private final SelenideElement nameInput = $("#name");
+    private final SelenideElement saveChangesButton = $(byText("Save changes"));
+    private final SelenideElement showArchivedText = $(byText("Show archived"));
 
-  private final SelenideElement avatar = $("#image__input").parent().$("img");
-  private final SelenideElement userName = $("#username");
-  private final SelenideElement nameInput = $("#name");
-  private final SelenideElement photoInput = $("input[type='file']");
-  private final SelenideElement submitButton = $("button[type='submit']");
-  private final SelenideElement categoryInput = $("input[name='category']");
-  private final SelenideElement archivedSwitcher = $(".MuiSwitch-input");
-  private final ElementsCollection bubbles = $$(".MuiChip-filled.MuiChip-colorPrimary");
-  private final ElementsCollection bubblesArchived = $$(".MuiChip-filled.MuiChip-colorDefault");
+    private SelenideElement getCategoryElement(String name) {
+        return $(byText(name));
+    }
+
+    private SelenideElement categoryDeletedMessage(String name) {
+        return $(byText("Category " + name + " is archived"));
+    }
+
+    public void clickShowArchivedText() {
+        executeJavaScript("window.scrollTo(0, 0);");
+        showArchivedText.click();
+    }
+
+    public void archiveCategory(String name) {
+        getCategoryElement(name).parent().parent()
+                .lastChild().$("[aria-label='Archive category']").click();
+        $(byText("Archive")).click();
+    }
+
+    public void restoreFromArchiveCategory(String name) {
+        getCategoryElement(name).parent().parent()
+                .lastChild().$("[aria-label='Unarchive category']").click();
+        $(byText("Unarchive")).click();
+    }
+
+    public void checkCategoryVisibility(String categoryName, boolean shouldBeVisible) {
+        if (shouldBeVisible) {
+            getCategoryElement(categoryName).shouldBe(visible);
+        } else {
+            getCategoryElement(categoryName).shouldNotBe(visible);
+        }
+    }
+
+    public void categoryDeletedMessageHeaderShouldBePresent(String name) {
+        categoryDeletedMessage(name).shouldBe(visible);
+    }
 
 
-  public ProfilePage setName(String name) {
-    nameInput.clear();
-    nameInput.setValue(name);
-    return this;
-  }
-
-  public ProfilePage uploadPhotoFromClasspath(String path) {
-    photoInput.uploadFromClasspath(path);
-    return this;
-  }
-
-  public ProfilePage addCategory(String category) {
-    categoryInput.setValue(category).pressEnter();
-    return this;
-  }
-
-  public ProfilePage checkCategoryExists(String category) {
-    bubbles.find(text(category)).shouldBe(visible);
-    return this;
-  }
-
-  public ProfilePage checkArchivedCategoryExists(String category) {
-    archivedSwitcher.click();
-    bubblesArchived.find(text(category)).shouldBe(visible);
-    return this;
-  }
-
-  public ProfilePage checkUsername(String username) {
-    this.userName.should(value(username));
-    return this;
-  }
-
-  public ProfilePage checkName(String name) {
-    nameInput.shouldHave(value(name));
-    return this;
-  }
-
-  public ProfilePage checkPhotoExist() {
-    avatar.should(attributeMatching("src", "data:image.*"));
-    return this;
-  }
-
-  public ProfilePage checkThatCategoryInputDisabled() {
-    categoryInput.should(disabled);
-    return this;
-  }
-
-  public ProfilePage submitProfile() {
-    submitButton.click();
-    return this;
-  }
 }

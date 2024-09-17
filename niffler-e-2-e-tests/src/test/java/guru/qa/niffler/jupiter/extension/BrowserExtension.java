@@ -3,6 +3,7 @@ package guru.qa.niffler.jupiter.extension;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import guru.qa.niffler.config.Config;
 import io.qameta.allure.Allure;
 import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -21,20 +22,23 @@ public class BrowserExtension implements
     TestExecutionExceptionHandler,
     LifecycleMethodExecutionExceptionHandler {
 
-  @Override
-  public void afterEach(ExtensionContext context) throws Exception {
-    if (WebDriverRunner.hasWebDriverStarted()) {
-      Selenide.closeWebDriver();
-    }
-  }
+    private static final Config CFG = Config.getInstance();
 
-  @Override
-  public void beforeEach(ExtensionContext context) throws Exception {
-    SelenideLogger.addListener("Allure-selenide", new AllureSelenide()
-        .savePageSource(false)
-        .screenshots(false)
-    );
-  }
+    @Override
+    public void afterEach(ExtensionContext context) throws Exception {
+        if (WebDriverRunner.hasWebDriverStarted()) {
+            Selenide.closeWebDriver();
+        }
+    }
+
+    @Override
+    public void beforeEach(ExtensionContext context) throws Exception {
+        Selenide.open(CFG.frontUrl());
+        SelenideLogger.addListener("Allure-selenide", new AllureSelenide()
+                .savePageSource(false)
+                .screenshots(false)
+        );
+    }
 
   @Override
   public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
