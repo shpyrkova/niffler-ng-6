@@ -11,8 +11,8 @@ import static com.codeborne.selenide.Selenide.$x;
 
 public class MainPage {
     private final ElementsCollection tableRows = $("#spendings tbody").$$("tr");
-    public final SelenideElement statisticsHeader = $(byText("Statistics"));
-    public final SelenideElement historyOfSpendingsHeader = $(byText("History of Spendings"));
+    private final SelenideElement statisticsHeader = $(byText("Statistics"));
+    private final SelenideElement historyOfSpendingsHeader = $(byText("History of Spendings"));
     private final SelenideElement profileMenuButton = $x("//*[@id=\"root\"]/header/div/div[2]/button");
     private final SelenideElement profileLink = $("[href='/profile']");
 
@@ -32,4 +32,13 @@ public class MainPage {
     public void checkThatTableContainsSpending(String spendingDescription) {
         tableRows.find(text(spendingDescription)).should(visible);
     }
+
+    public void statisticsHeaderShouldBePresent() {
+        statisticsHeader.shouldBe(visible);
+    }
+
+    public void historyOfSpendingsHeaderShouldBePresent() {
+        historyOfSpendingsHeader.shouldBe(visible);
+    }
+
 }

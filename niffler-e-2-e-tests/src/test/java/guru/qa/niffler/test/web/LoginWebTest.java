@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 @ExtendWith(BrowserExtension.class)
@@ -36,8 +35,8 @@ public class LoginWebTest {
         final String password = "00000000";
 
         loginPage.login(username, password);
-        mainPage.statisticsHeader.shouldBe(visible);
-        mainPage.historyOfSpendingsHeader.shouldBe(visible);
+        mainPage.statisticsHeaderShouldBePresent();
+        mainPage.historyOfSpendingsHeaderShouldBePresent();
     }
 
     @Test
@@ -46,7 +45,7 @@ public class LoginWebTest {
         final String password = "99999999";
 
         loginPage.login(username, password);
-        loginPage.invalidCredentialsErrorMessage().shouldBe(visible);
+        loginPage.invalidCredentialsErrorMessageShouldBePresent();
     }
 
 }

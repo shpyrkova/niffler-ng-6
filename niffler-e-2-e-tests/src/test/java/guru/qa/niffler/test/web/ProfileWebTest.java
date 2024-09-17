@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 @ExtendWith(BrowserExtension.class)
@@ -41,10 +40,10 @@ public class ProfileWebTest {
         mainPage.clickProfileMenuButton();
         mainPage.clickProfileLink();
         profilePage.archiveCategory(category.name());
-        profilePage.categoryDeletedMessage(category.name()).shouldBe(visible);
-        profilePage.getCategoryElement(category.name()).shouldNotBe(visible);
+        profilePage.categoryDeletedMessageHeaderShouldBePresent(category.name());
+        profilePage.checkCategoryVisibility(category.name(), false);
         profilePage.clickShowArchivedText();
-        profilePage.getCategoryElement(category.name()).shouldBe(visible);
+        profilePage.checkCategoryVisibility(category.name(), true);
     }
 
     @Category(username = "dasha", archived = true)
@@ -56,7 +55,7 @@ public class ProfileWebTest {
         profilePage.clickShowArchivedText();
         profilePage.restoreFromArchiveCategory(category.name());
         profilePage.clickShowArchivedText();
-        profilePage.getCategoryElement(category.name()).shouldBe(visible);
+        profilePage.checkCategoryVisibility(category.name(), true);
     }
 
 }

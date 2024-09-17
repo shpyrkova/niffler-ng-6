@@ -2,6 +2,7 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -12,6 +13,13 @@ public class RegisterPage {
     private final SelenideElement signUpButton = $("button[type='submit']");
     private final SelenideElement signInLink = $(byText("Sign in"));
 
+    private SelenideElement passwordsShouldBeEqualErrorMessage() {
+        return $(byText("Passwords should be equal"));
+    }
+
+    private SelenideElement userWithUsernameAlreadyExistsErrorMessage(String username) {
+        return $(byText("Username" + " `" + username + "` " + "already exists"));
+    }
 
     public void setUsername(String username) {
         usernameInput.setValue(username);
@@ -40,12 +48,12 @@ public class RegisterPage {
         signInLink.click();
     }
 
-    public SelenideElement userWithUsernameAlreadyExistsErrorMessage(String username) {
-        return $(byText("Username" + " `" + username + "` " + "already exists"));
+    public void passwordsShouldBeEqualErrorMessageShouldBePresent() {
+        passwordsShouldBeEqualErrorMessage().shouldBe(visible);
     }
 
-    public SelenideElement passwordsShouldBeEqualErrorMessage() {
-        return $(byText("Passwords should be equal"));
+    public void userWithUsernameAlreadyExistsErrorMessageShouldBePresent(String username) {
+        userWithUsernameAlreadyExistsErrorMessage(username).shouldBe(visible);
     }
 
 }

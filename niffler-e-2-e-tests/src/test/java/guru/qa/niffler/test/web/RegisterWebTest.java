@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 @ExtendWith(BrowserExtension.class)
@@ -42,8 +41,8 @@ public class RegisterWebTest {
                 .register(username, password);
         registerPage.clickSignInLink();
         loginPage.login(username, password);
-        mainPage.statisticsHeader.shouldBe(visible);
-        mainPage.historyOfSpendingsHeader.shouldBe(visible);
+        mainPage.statisticsHeaderShouldBePresent();
+        mainPage.historyOfSpendingsHeaderShouldBePresent();
     }
 
     @Test
@@ -53,7 +52,7 @@ public class RegisterWebTest {
 
         loginPage.clickCreateNewAccountLink()
                 .register(username, password);
-        registerPage.userWithUsernameAlreadyExistsErrorMessage(username).shouldBe(visible);
+        registerPage.userWithUsernameAlreadyExistsErrorMessageShouldBePresent(username);
     }
 
     @Test
@@ -67,7 +66,7 @@ public class RegisterWebTest {
         registerPage.setPassword(password);
         registerPage.confirmPassword(confirmPassword);
         registerPage.clickSignUpButton();
-        registerPage.passwordsShouldBeEqualErrorMessage().shouldBe(visible);
+        registerPage.passwordsShouldBeEqualErrorMessageShouldBePresent();
     }
 
 }
