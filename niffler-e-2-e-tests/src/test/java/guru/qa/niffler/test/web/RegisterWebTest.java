@@ -1,19 +1,9 @@
 package guru.qa.niffler.test.web;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.jupiter.extension.BrowserExtension;
-import guru.qa.niffler.page.LoginPage;
-import guru.qa.niffler.page.MainPage;
-import guru.qa.niffler.page.RegisterPage;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(BrowserExtension.class)
-public class RegisterWebTest {
-
-    RegisterPage registerPage = new RegisterPage();
-    LoginPage loginPage = new LoginPage();
-    MainPage mainPage = new MainPage();
+public class RegisterWebTest extends TestBaseWeb {
 
     @Test
     void shouldRegisterNewUser() {
