@@ -1,7 +1,8 @@
-package guru.qa.niffler.jupiter;
+package guru.qa.niffler.jupiter.extension;
 
 import com.github.javafaker.Faker;
 import guru.qa.niffler.api.SpendApiClient;
+import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.model.CategoryJson;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
@@ -27,8 +28,8 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                     if (annotation.archived()) {
                         CategoryJson archivedCategory = new CategoryJson(
                                 createdCategory.id(),
-                                categoryName,
-                                annotation.username(),
+                                createdCategory.name(),
+                                createdCategory.username(),
                                 true
                         );
                         createdCategory = spendApiClient.updateCategory(archivedCategory);
@@ -42,14 +43,12 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
         CategoryJson category = context.getStore(CreateCategoryExtension.NAMESPACE).get(context.getUniqueId(), CategoryJson.class);
-        if (!category.archived()) {
             spendApiClient.updateCategory(new CategoryJson(
                     category.id(),
                     category.name(),
                     category.username(),
                     true
             ));
-        }
     }
 
     @Override
