@@ -20,7 +20,7 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                 .ifPresent(annotation -> {
                     CategoryJson category = new CategoryJson(
                             null,
-                            categoryName,
+                            annotation.name().isEmpty() ? categoryName : annotation.name(),
                             annotation.username(),
                             false
                     );
