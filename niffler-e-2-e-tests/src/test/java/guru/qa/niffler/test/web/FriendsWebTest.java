@@ -50,7 +50,7 @@ public class FriendsWebTest extends TestBaseWeb {
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
         friendsPage.clickAllPeopleTab();
-        friendsPage.outcomeRequestUsernameShouldBePresent(user.outcome());
+        friendsPage.outcomeRequestShouldBePresent(user.outcome());
     }
 
 }

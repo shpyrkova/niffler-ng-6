@@ -23,8 +23,8 @@ public class FriendsPage {
         return requestsTableRows.find(text(username)).$(byText(username));
     }
 
-    private SelenideElement outcomeRequestUsername(String username) {
-        return allPeopleTableRows.find(text(username)).$(byText(username));
+    private SelenideElement outcomeRequestRow(String username) {
+        return allPeopleTableRows.find(text(username));
     }
 
     public void friendUsernameShouldBePresent(String username) {
@@ -35,8 +35,8 @@ public class FriendsPage {
         incomeRequestUsername(username).shouldBe(visible);
     }
 
-    public void outcomeRequestUsernameShouldBePresent(String username) {
-        outcomeRequestUsername(username).shouldBe(visible);
+    public void outcomeRequestShouldBePresent(String username) {
+        outcomeRequestRow(username).shouldBe(visible).shouldHave(text("Waiting..."));
     }
 
     public void noFriendsMessageShouldBePresent() {
