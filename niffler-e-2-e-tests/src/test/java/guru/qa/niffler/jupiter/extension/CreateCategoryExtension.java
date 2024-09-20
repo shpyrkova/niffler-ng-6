@@ -1,18 +1,19 @@
 package guru.qa.niffler.jupiter.extension;
 
-import com.github.javafaker.Faker;
 import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.model.CategoryJson;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
+import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
+
 public class CreateCategoryExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback, ParameterResolver {
 
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CreateCategoryExtension.class);
 
     private final SpendApiClient spendApiClient = new SpendApiClient();
-    private final String categoryName = Faker.instance().letterify("????????");
+    private final String categoryName = randomCategoryName();
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
@@ -34,7 +35,6 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                         );
                         createdCategory = spendApiClient.updateCategory(archivedCategory);
                     }
-                    System.out.println(createdCategory);
                     context.getStore(NAMESPACE).put(context.getUniqueId(), createdCategory);
 
                 });
