@@ -1,13 +1,14 @@
 package guru.qa.niffler.test.web;
 
-import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Test;
+
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
 public class RegisterWebTest extends TestBaseWeb {
 
     @Test
     void shouldRegisterNewUser() {
-        final String username = Faker.instance().internet().domainName();
+        final String username = randomUsername();
         final String password = "00000000";
 
         loginPage.clickCreateNewAccountLink()
@@ -30,7 +31,7 @@ public class RegisterWebTest extends TestBaseWeb {
 
     @Test
     void shouldShowErrorIfPasswordAndConfirmPasswordAreNotEqual() {
-        final String username = Faker.instance().internet().domainName();
+        final String username = randomUsername();
         final String password = "00000000";
         final String confirmPassword = "11111111";
 
