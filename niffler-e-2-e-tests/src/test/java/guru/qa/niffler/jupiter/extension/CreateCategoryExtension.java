@@ -1,6 +1,7 @@
 package guru.qa.niffler.jupiter.extension;
 
 import guru.qa.niffler.api.SpendApiClient;
+import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
 import org.junit.jupiter.api.extension.*;
@@ -21,14 +22,15 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                 // Начинает работать, только если в аннотации не пустой массив Категорий. И если он не пустой, обрабатываем только первый элемент
                 .ifPresent(annotation -> {
                     if (annotation.categories().length > 0) {
+                        Category firstCategory = annotation.categories()[0];
                         CategoryJson category = new CategoryJson(
                                 null,
-                                annotation.categories()[0].name().isEmpty() ? categoryName : annotation.categories()[0].name(),
+                                firstCategory.name().isEmpty() ? categoryName : firstCategory.name(),
                                 annotation.username(),
                                 false
                         );
                         CategoryJson createdCategory = spendApiClient.createCategory(category);
-                        if (annotation.categories()[0].archived()) {
+                        if (firstCategory.archived()) {
                             CategoryJson archivedCategory = new CategoryJson(
                                     createdCategory.id(),
                                     createdCategory.name(),
