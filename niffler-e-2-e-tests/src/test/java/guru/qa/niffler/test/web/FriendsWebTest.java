@@ -12,12 +12,12 @@ import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Typ
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_OUTCOME_REQUEST;
 import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_INCOME_REQUEST;
 
+@ExtendWith(UsersQueueExtension.class)
 public class FriendsWebTest extends TestBaseWeb {
 
     FriendsPage friendsPage = new FriendsPage();
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void friendsTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
         loginPage.login(user.username(), user.password());
         mainPage.clickProfileMenuButton();
@@ -26,25 +26,22 @@ public class FriendsWebTest extends TestBaseWeb {
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) StaticUser user) {
         loginPage.login(user.username(), user.password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.friendUsernameShouldBePresent(user.friend());
+        friendsPage.friendRowShouldBePresent(user.friend());
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
         loginPage.login(user.username(), user.password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.requestUsernameShouldBePresent(user.income());
+        friendsPage.incomeRequestShouldBePresent(user.income());
     }
 
     @Test
-    @ExtendWith(UsersQueueExtension.class)
     void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
         loginPage.login(user.username(), user.password());
         mainPage.clickProfileMenuButton();
