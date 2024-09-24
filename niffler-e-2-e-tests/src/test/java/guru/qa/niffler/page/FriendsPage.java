@@ -15,28 +15,16 @@ public class FriendsPage {
     private final SelenideElement allPeopleTab = $("[href='/people/all']");
     private final ElementsCollection allPeopleTableRows = $("#all").$$("tr");
 
-    private SelenideElement friendUsername(String username) {
-        return friendsTableRows.find(text(username)).$(byText(username));
+    public void friendRowShouldBePresent(String username) {
+        friendsTableRows.find(text(username)).shouldBe(visible);
     }
 
-    private SelenideElement incomeRequestUsername(String username) {
-        return requestsTableRows.find(text(username)).$(byText(username));
-    }
-
-    private SelenideElement outcomeRequestRow(String username) {
-        return allPeopleTableRows.find(text(username));
-    }
-
-    public void friendUsernameShouldBePresent(String username) {
-        friendUsername(username).shouldBe(visible);
-    }
-
-    public void requestUsernameShouldBePresent(String username) {
-        incomeRequestUsername(username).shouldBe(visible);
+    public void incomeRequestShouldBePresent(String username) {
+        requestsTableRows.find(text(username)).shouldBe(visible);
     }
 
     public void outcomeRequestShouldBePresent(String username) {
-        outcomeRequestRow(username).shouldBe(visible).shouldHave(text("Waiting..."));
+        allPeopleTableRows.find(text(username)).shouldBe(visible).shouldHave(text("Waiting..."));
     }
 
     public void noFriendsMessageShouldBePresent() {
