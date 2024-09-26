@@ -4,6 +4,7 @@ import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.service.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -14,6 +15,7 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CreateCategoryExtension.class);
 
     private final SpendApiClient spendApiClient = new SpendApiClient();
+    private final SpendDbClient spendDbClient = new SpendDbClient();
     private final String categoryName = randomCategoryName();
 
     @Override
@@ -29,7 +31,7 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                                 annotation.username(),
                                 false
                         );
-                        CategoryJson createdCategory = spendApiClient.createCategory(category);
+                        CategoryJson createdCategory = spendDbClient.createCategory(category);
                         if (firstCategory.archived()) {
                             CategoryJson archivedCategory = new CategoryJson(
                                     createdCategory.id(),
