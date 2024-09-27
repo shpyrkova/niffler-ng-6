@@ -17,7 +17,6 @@ import java.util.*;
 public class SpendDaoJdbc implements SpendDao {
 
     private static final Config CFG = Config.getInstance();
-    private static final CategoryDaoJdbc categoryDaoJdbc = new CategoryDaoJdbc();
 
     @Override
     public SpendEntity create(SpendEntity spend) {
@@ -101,10 +100,9 @@ public class SpendDaoJdbc implements SpendDao {
                         se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
                         se.setAmount(rs.getDouble("amount"));
                         se.setDescription(rs.getString("description"));
-                        CategoryEntity categoryEntity = categoryDaoJdbc
-                                .findCategoryById(UUID.fromString(rs.getString("category_id")))
-                                .orElseThrow(() -> new RuntimeException("Category not found"));
-                        se.setCategory(categoryEntity);
+                        CategoryEntity ce = new CategoryEntity();
+                        ce.setId(UUID.fromString(rs.getString("category_id")));
+                        se.setCategory(ce);
                         foundEntities.add(se);
                     }
                     if (!foundEntities.isEmpty()) {

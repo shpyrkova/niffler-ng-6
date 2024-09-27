@@ -66,6 +66,9 @@ public class SpendDbClient {
 
     public List<SpendJson> findAllSpendingsByUsername(String username) {
         List<SpendEntity> spendEntities = spendDao.findAllByUsername(username);
+        spendEntities.forEach(se -> se.setCategory(categoryDao.
+                findCategoryById(se.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Category not found"))));
         return spendEntities.stream()
                 .map(SpendJson::fromEntity)
                 .toList();
