@@ -4,6 +4,7 @@ import guru.qa.niffler.api.SpendApiClient;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.service.SpendDbClient;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
 
@@ -14,6 +15,7 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CreateCategoryExtension.class);
 
     private final SpendApiClient spendApiClient = new SpendApiClient();
+    private final SpendDbClient spendDbClient = new SpendDbClient();
     private final String categoryName = randomCategoryName();
 
     @Override
@@ -27,20 +29,10 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                                 null,
                                 firstCategory.name().isEmpty() ? categoryName : firstCategory.name(),
                                 annotation.username(),
-                                false
+                                firstCategory.archived()
                         );
-                        CategoryJson createdCategory = spendApiClient.createCategory(category);
-                        if (firstCategory.archived()) {
-                            CategoryJson archivedCategory = new CategoryJson(
-                                    createdCategory.id(),
-                                    createdCategory.name(),
-                                    createdCategory.username(),
-                                    true
-                            );
-                            createdCategory = spendApiClient.updateCategory(archivedCategory);
-                        }
+                        CategoryJson createdCategory = spendDbClient.createCategory(category);
                         context.getStore(NAMESPACE).put(context.getUniqueId(), createdCategory);
-
                     }
                 });
     }
