@@ -9,6 +9,8 @@ public record UserJson(
     @JsonProperty("id")
     UUID id,
 
+    UUID authId,
+
     @JsonProperty("username")
     String username,
 
@@ -33,6 +35,7 @@ public record UserJson(
         public static UserJson fromEntity(UserEntity entity) {
             return new UserJson(
                     entity.getId(),
+                    null,
                     entity.getUsername(),
                     entity.getFirstname(),
                     entity.getSurname(),
