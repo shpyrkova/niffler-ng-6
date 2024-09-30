@@ -117,10 +117,7 @@ public class CategoryDaoJdbc implements CategoryDao {
                         ce.setArchived(rs.getBoolean("archived"));
                         foundEntities.add(ce);
                     }
-                    if (!foundEntities.isEmpty()) {
-                        return foundEntities;
-                    }
-                    else return List.of();
+                    return foundEntities;
                 }
             }
         } catch (SQLException e) {

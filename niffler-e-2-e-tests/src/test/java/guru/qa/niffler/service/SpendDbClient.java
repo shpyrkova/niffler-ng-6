@@ -57,8 +57,8 @@ public class SpendDbClient {
         SpendEntity spendEntity = spendDao.findSpendById(id)
                 .orElseThrow(() -> new RuntimeException("Spend not found"));
         // заполняем данные по категории именно здесь, так как в DAO мы должны работать только с одной таблицей
-        CategoryEntity categoryEntity = categoryDao.
-                findCategoryById(spendEntity.getCategory().getId())
+        CategoryEntity categoryEntity = categoryDao
+                .findCategoryById(spendEntity.getCategory().getId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         spendEntity.setCategory(categoryEntity);
         return SpendJson.fromEntity(spendEntity);

@@ -29,20 +29,10 @@ public class CreateCategoryExtension implements BeforeTestExecutionCallback, Aft
                                 null,
                                 firstCategory.name().isEmpty() ? categoryName : firstCategory.name(),
                                 annotation.username(),
-                                false
+                                firstCategory.archived()
                         );
                         CategoryJson createdCategory = spendDbClient.createCategory(category);
-                        if (firstCategory.archived()) {
-                            CategoryJson archivedCategory = new CategoryJson(
-                                    createdCategory.id(),
-                                    createdCategory.name(),
-                                    createdCategory.username(),
-                                    true
-                            );
-                            createdCategory = spendApiClient.updateCategory(archivedCategory);
-                        }
                         context.getStore(NAMESPACE).put(context.getUniqueId(), createdCategory);
-
                     }
                 });
     }

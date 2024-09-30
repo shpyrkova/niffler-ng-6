@@ -105,9 +105,7 @@ public class SpendDaoJdbc implements SpendDao {
                         se.setCategory(ce);
                         foundEntities.add(se);
                     }
-                    if (!foundEntities.isEmpty()) {
-                        return foundEntities;
-                    } else return List.of();
+                    return foundEntities;
                 }
             }
         } catch (SQLException e) {
