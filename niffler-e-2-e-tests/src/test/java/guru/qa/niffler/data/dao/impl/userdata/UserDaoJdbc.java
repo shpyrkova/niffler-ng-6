@@ -1,6 +1,5 @@
 package guru.qa.niffler.data.dao.impl.userdata;
 
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.UserDao;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.model.CurrencyValues;
@@ -19,7 +18,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public UserEntity createUser(UserEntity user) {
+    public UserEntity create(UserEntity user) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "INSERT INTO \"user\" (username, currency, firstname, surname, photo, photo_small, full_name) " +
                             "VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -50,7 +49,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public Optional<UserEntity> findUserById(UUID id) {
+    public Optional<UserEntity> findById(UUID id) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM \"user\" WHERE id = ?"
         )) {
@@ -106,8 +105,8 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public void deleteUser(UserEntity user) {
-        Optional<UserEntity> userEntity = findUserById(user.getId());
+    public void delete(UserEntity user) {
+        Optional<UserEntity> userEntity = findById(user.getId());
         if (userEntity.isPresent()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "DELETE FROM \"user\" WHERE id = ?"

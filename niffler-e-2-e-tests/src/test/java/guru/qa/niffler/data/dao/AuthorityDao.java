@@ -4,7 +4,7 @@ import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 
 public interface AuthorityDao {
 
-    AuthorityEntity[] createAuthority(AuthorityEntity[] authorityEntities);
+    AuthorityEntity[] create(AuthorityEntity[] authorityEntities);
 
     void deleteAuthority(AuthorityEntity authority);
 

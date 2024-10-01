@@ -7,12 +7,12 @@ import java.util.UUID;
 
 public interface UserDao {
 
-    UserEntity createUser(UserEntity user);
+    UserEntity create(UserEntity user);
 
-    Optional<UserEntity> findUserById(UUID id);
+    Optional<UserEntity> findById(UUID id);
 
     Optional<UserEntity> findUserByUsername(String username);
 
-    void deleteUser(UserEntity user);
+    void delete(UserEntity user);
 
 }

@@ -3,9 +3,12 @@ package guru.qa.niffler.service;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.Databases;
 import guru.qa.niffler.data.dao.UserDao;
+import guru.qa.niffler.data.dao.impl.auth.AuthorityDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.auth.AuthUserDaoJdbc;
+import guru.qa.niffler.data.dao.impl.auth.AuthUserDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.auth.AuthorityDaoJdbc;
 import guru.qa.niffler.data.dao.impl.userdata.UserDaoJdbc;
+import guru.qa.niffler.data.dao.impl.userdata.UserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
@@ -19,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.UUID;
 
+import static guru.qa.niffler.data.Databases.dataSource;
 import static guru.qa.niffler.data.Databases.xaTransaction;
 
 public class UsersDbClient {
@@ -37,13 +41,13 @@ public class UsersDbClient {
     public UserJson createUser(UserJson user) {
         UserEntity userEntity = UserEntity.fromJson(user);
         return UserJson.fromEntity(
-                userDao.createUser(userEntity)
+                userDao.create(userEntity)
         );
     }
 
     public UserJson findUserById(UUID id) {
         return UserJson
-                .fromEntity(userDao.findUserById(id)
+                .fromEntity(userDao.findById(id)
                         .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
@@ -55,7 +59,7 @@ public class UsersDbClient {
 
     public void deleteUser(UserJson user) {
         UserEntity userEntity = UserEntity.fromJson(user);
-        userDao.deleteUser(userEntity);
+        userDao.delete(userEntity);
     }
 
     public UserJson createUserdataAndAuthUser(UserJson user) {
@@ -71,24 +75,24 @@ public class UsersDbClient {
                     authUser.setCredentialsNonExpired(true);
 
                     AuthUserEntity createdAuthUser = new AuthUserDaoJdbc(connection)
-                            .createUser(authUser);
+                            .create(authUser);
                     AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                             e -> {
                                 AuthorityEntity ae = new AuthorityEntity();
-                                ae.setUser(createdAuthUser);
+                                ae.setUserId(createdAuthUser);
                                 ae.setAuthority(e);
                                 return ae;
                             }
                     ).toArray(AuthorityEntity[]::new);
 
                     new AuthorityDaoJdbc(authConnection)
-                            .createAuthority(authorityEntities);
+                            .create(authorityEntities);
                     return createdAuthUser;
                 }, CFG.authJdbcUrl()),
                 // создание пользователя в userdata
                 new Databases.XaFunction<>(connection -> {
                     UserEntity createdUser = new UserDaoJdbc(connection)
-                            .createUser(UserEntity.fromJson(user));
+                            .create(UserEntity.fromJson(user));
                     return UserJson.fromEntity(createdUser);
                 }, CFG.userdataJdbcUrl())
         );
@@ -102,15 +106,47 @@ public class UsersDbClient {
                     authUser.setUsername(user.username());
                     authUser.setId(user.authId());
                     AuthorityEntity ae = new AuthorityEntity();
-                    ae.setUser(authUser);
+                    ae.setUserId(authUser);
                     new AuthorityDaoJdbc(connection).deleteAuthority(ae);
 
-                    new AuthUserDaoJdbc(connection).deleteUser(authUser);
+                    new AuthUserDaoJdbc(connection).delete(authUser);
                 }, CFG.authJdbcUrl()),
                 // удаление пользователя в userdata
                 new Databases.XaConsumer(connection -> {
-                    new UserDaoJdbc(connection).deleteUser(UserEntity.fromJson(user));
+                    new UserDaoJdbc(connection).delete(UserEntity.fromJson(user));
                 }, CFG.userdataJdbcUrl())
+        );
+    }
+
+    public UserJson createUserSpringJdbc(UserJson user) {
+        AuthUserEntity authUser = new AuthUserEntity();
+        authUser.setUsername(user.username());
+        authUser.setPassword(pe.encode("12345"));
+        authUser.setEnabled(true);
+        authUser.setAccountNonExpired(true);
+        authUser.setAccountNonLocked(true);
+        authUser.setCredentialsNonExpired(true);
+
+        AuthUserEntity createdAuthUser = new AuthUserDaoSpringJdbc(dataSource(CFG.authJdbcUrl()))
+                .create(authUser);
+
+        AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                e -> {
+                    AuthorityEntity ae = new AuthorityEntity();
+                    ae.setUserId(createdAuthUser);
+                    ae.setAuthority(e);
+                    return ae;
+                }
+        ).toArray(AuthorityEntity[]::new);
+
+        new AuthorityDaoSpringJdbc(dataSource(CFG.authJdbcUrl()))
+                .create(authorityEntities);
+
+        return UserJson.fromEntity(
+                new UserDaoSpringJdbc(dataSource(CFG.userdataJdbcUrl()))
+                        .create(
+                                UserEntity.fromJson(user)
+                        )
         );
     }
 

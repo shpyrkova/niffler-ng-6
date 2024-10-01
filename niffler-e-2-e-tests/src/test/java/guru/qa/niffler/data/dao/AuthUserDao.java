@@ -7,10 +7,10 @@ import java.util.UUID;
 
 public interface AuthUserDao {
 
-    AuthUserEntity createUser(AuthUserEntity user);
+    AuthUserEntity create(AuthUserEntity user);
 
-    Optional<AuthUserEntity> findUserById(UUID id);
+    Optional<AuthUserEntity> findById(UUID id);
 
-    void deleteUser(AuthUserEntity user);
+    void delete(AuthUserEntity user);
 
 }
