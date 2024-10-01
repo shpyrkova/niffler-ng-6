@@ -50,22 +50,47 @@ public class CategoryDaoSpringJdbc implements CategoryDao {
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryById(UUID id) {
-        return Optional.empty();
+    public Optional<CategoryEntity> findById(UUID id) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM category WHERE id = ?",
+                        CategoryEntityRowMapper.instance,
+                        id
+                )
+        );
     }
 
     @Override
-    public Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String categoryName) {
-        return Optional.empty();
+    public Optional<CategoryEntity> findByUsernameAndCategoryName(String username, String categoryName) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM category WHERE username = ? AND name = ?",
+                        CategoryEntityRowMapper.instance,
+                        username,
+                        categoryName
+                )
+        );
     }
 
     @Override
     public List<CategoryEntity> findAllByUsername(String username) {
-        return List.of();
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return jdbcTemplate.query(
+                "SELECT * FROM category where username = ?",
+                CategoryEntityRowMapper.instance,
+                username
+        );
     }
 
     @Override
-    public void deleteCategory(CategoryEntity category) {
+    public void delete(CategoryEntity category) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.update(
+                "DELETE FROM category WHERE id = ?",
+                category.getId()
+        );
     }
 
 }

@@ -75,7 +75,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public Optional<UserEntity> findUserByUsername(String username) {
+    public Optional<UserEntity> findByUsername(String username) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM \"user\" WHERE username = ?"
         )) {

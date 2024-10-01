@@ -54,7 +54,7 @@ public class UsersDbClient {
 
     public UserJson findUserByUsername(String username) {
         return UserJson
-                .fromEntity(userDao.findUserByUsername(username)
+                .fromEntity(userDao.findByUsername(username)
                         .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
@@ -108,7 +108,7 @@ public class UsersDbClient {
                     authUser.setId(user.authId());
                     AuthorityEntity ae = new AuthorityEntity();
                     ae.setUserId(authUser);
-                    new AuthorityDaoJdbc(connection).deleteAuthority(ae);
+                    new AuthorityDaoJdbc(connection).delete(ae);
 
                     new AuthUserDaoJdbc(connection).delete(authUser);
                 }, CFG.authJdbcUrl()),

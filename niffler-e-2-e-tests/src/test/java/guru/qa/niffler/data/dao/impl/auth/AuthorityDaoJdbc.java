@@ -48,7 +48,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
     }
 
     @Override
-    public void deleteAuthority(AuthorityEntity authority) {
+    public void delete(AuthorityEntity authority) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "DELETE FROM authority WHERE user_id = ?"
         )) {

@@ -8,7 +8,7 @@ public interface AuthorityDao {
 
     AuthorityEntity[] create(AuthorityEntity[] authorityEntities);
 
-    void deleteAuthority(AuthorityEntity authority);
+    void delete(AuthorityEntity authority);
 
     List<AuthorityEntity> findAll();
 

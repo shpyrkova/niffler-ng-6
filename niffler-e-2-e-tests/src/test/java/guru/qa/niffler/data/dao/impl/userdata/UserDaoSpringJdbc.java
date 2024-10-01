@@ -68,12 +68,24 @@ public class UserDaoSpringJdbc implements UserDao {
     }
 
     @Override
-    public Optional<UserEntity> findUserByUsername(String username) {
-        return Optional.empty();
+    public Optional<UserEntity> findByUsername(String username) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(
+                        "SELECT * FROM \"user\" WHERE username = ?",
+                        UdUserEntityRowMapper.instance,
+                        username
+                )
+        );
     }
 
     @Override
     public void delete(UserEntity user) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.update(
+                "DELETE FROM \"user\" WHERE id = ?",
+                user.getId()
+        );
     }
 
 }

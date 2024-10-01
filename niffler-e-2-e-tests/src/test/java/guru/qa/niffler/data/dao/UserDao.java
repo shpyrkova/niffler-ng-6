@@ -12,7 +12,7 @@ public interface UserDao {
 
     Optional<UserEntity> findById(UUID id);
 
-    Optional<UserEntity> findUserByUsername(String username);
+    Optional<UserEntity> findByUsername(String username);
 
     List<UserEntity> findAll();
 

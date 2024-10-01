@@ -47,7 +47,11 @@ public class AuthUserDaoSpringJdbc implements AuthUserDao {
 
     @Override
     public void delete(AuthUserEntity user) {
-
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.update(
+                "DELETE FROM \"user\" WHERE id = ?",
+                user.getId()
+        );
     }
 
     @Override

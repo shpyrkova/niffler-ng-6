@@ -51,7 +51,7 @@ public class SpendDbClient {
         return transaction(connection -> {
                     return CategoryJson
                             .fromEntity(new CategoryDaoJdbc(connection)
-                                    .findCategoryByUsernameAndCategoryName(category.username(), category.name())
+                                    .findByUsernameAndCategoryName(category.username(), category.name())
                                     .orElseThrow(() -> new RuntimeException("Category not found")));
                 },
                 CFG.spendJdbcUrl(), 2
@@ -70,7 +70,7 @@ public class SpendDbClient {
     public void deleteCategory(CategoryJson category) {
         CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
         transaction(connection -> {
-            new CategoryDaoJdbc(connection).deleteCategory(categoryEntity);
+            new CategoryDaoJdbc(connection).delete(categoryEntity);
         }, CFG.spendJdbcUrl(), 2);
     }
 
@@ -80,7 +80,7 @@ public class SpendDbClient {
                     .orElseThrow(() -> new RuntimeException("Spend not found"));
             // заполняем данные по категории именно здесь, так как в DAO мы должны работать только с одной таблицей
             CategoryEntity categoryEntity = new CategoryDaoJdbc(connection).
-                    findCategoryById(spendEntity.getCategory().getId())
+                    findById(spendEntity.getCategory().getId())
                     .orElseThrow(() -> new RuntimeException("Category not found"));
             spendEntity.setCategory(categoryEntity);
             return SpendJson.fromEntity(spendEntity);
@@ -91,7 +91,7 @@ public class SpendDbClient {
         return transaction(connection -> {
             List<SpendEntity> spendEntities = new SpendDaoJdbc(connection).findAllByUsername(username);
             spendEntities.forEach(se -> se.setCategory(new CategoryDaoJdbc(connection).
-                    findCategoryById(se.getCategory().getId())
+                    findById(se.getCategory().getId())
                     .orElseThrow(() -> new RuntimeException("Category not found"))));
             return spendEntities.stream()
                     .map(SpendJson::fromEntity)
