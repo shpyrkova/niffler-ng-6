@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static guru.qa.niffler.data.Databases.dataSource;
@@ -27,11 +28,11 @@ import static guru.qa.niffler.data.Databases.xaTransaction;
 
 public class UsersDbClient {
 
+    private static final Config CFG = Config.getInstance();
+
     Connection userdataConnection = Databases.connection(CFG.userdataJdbcUrl());
     Connection authConnection = Databases.connection(CFG.authJdbcUrl());
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-    private static final Config CFG = Config.getInstance();
 
     private final UserDao userDao = new UserDaoJdbc(userdataConnection);
 
@@ -148,6 +149,20 @@ public class UsersDbClient {
                                 UserEntity.fromJson(user)
                         )
         );
+    }
+
+    public List<UserJson> findAllUsers() throws SQLException {
+        List<UserEntity> userEntities = new UserDaoJdbc(Databases.connection(CFG.userdataJdbcUrl())).findAll();
+        return userEntities.stream()
+                .map(UserJson::fromEntity)
+                .toList();
+    }
+
+    public List<UserJson> findAllUsersSpringJdbc() {
+        List<UserEntity> userEntities = new UserDaoSpringJdbc(dataSource(CFG.userdataJdbcUrl())).findAll();
+        return userEntities.stream()
+                .map(UserJson::fromEntity)
+                .toList();
     }
 
 }

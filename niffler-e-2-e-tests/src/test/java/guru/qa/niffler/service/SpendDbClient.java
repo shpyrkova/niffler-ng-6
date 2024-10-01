@@ -1,17 +1,21 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.data.Databases;
 import guru.qa.niffler.data.dao.impl.spend.CategoryDaoJdbc;
+import guru.qa.niffler.data.dao.impl.spend.CategoryDaoSpringJdbc;
 import guru.qa.niffler.data.dao.impl.spend.SpendDaoJdbc;
+import guru.qa.niffler.data.dao.impl.spend.SpendDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.Databases.transaction;
+import static guru.qa.niffler.data.Databases.*;
 
 public class SpendDbClient {
 
@@ -72,7 +76,7 @@ public class SpendDbClient {
 
     public SpendJson findSpendById(UUID id) {
         return transaction(connection -> {
-            SpendEntity spendEntity = new SpendDaoJdbc(connection).findSpendById(id)
+            SpendEntity spendEntity = new SpendDaoJdbc(connection).findById(id)
                     .orElseThrow(() -> new RuntimeException("Spend not found"));
             // заполняем данные по категории именно здесь, так как в DAO мы должны работать только с одной таблицей
             CategoryEntity categoryEntity = new CategoryDaoJdbc(connection).
@@ -98,8 +102,36 @@ public class SpendDbClient {
     public void deleteSpend(SpendJson spend) {
         SpendEntity spendEntity = SpendEntity.fromJson(spend);
         transaction(connection -> {
-            new SpendDaoJdbc(connection).deleteSpend(spendEntity);
+            new SpendDaoJdbc(connection).delete(spendEntity);
         }, CFG.spendJdbcUrl(), 2);
+    }
+
+    public List<SpendJson> findAllSpendings() throws SQLException {
+        List<SpendEntity> spendEntities = new SpendDaoJdbc(Databases.connection(CFG.spendJdbcUrl())).findAll();
+        return spendEntities.stream()
+                .map(SpendJson::fromEntity)
+                .toList();
+    }
+
+    public List<SpendJson> findAllSpendingsSpringJdbc() {
+        List<SpendEntity> spendEntities = new SpendDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findAll();
+        return spendEntities.stream()
+                .map(SpendJson::fromEntity)
+                .toList();
+    }
+
+    public List<CategoryJson> findAllCategories() throws SQLException {
+        List<CategoryEntity> categoryEntities = new CategoryDaoJdbc(Databases.connection(CFG.spendJdbcUrl())).findAll();
+        return categoryEntities.stream()
+                .map(CategoryJson::fromEntity)
+                .toList();
+    }
+
+    public List<CategoryJson> findAllCategoriesSpringJdbc() {
+        List<CategoryEntity> categoryEntities = new CategoryDaoSpringJdbc(dataSource(CFG.spendJdbcUrl())).findAll();
+        return categoryEntities.stream()
+                .map(CategoryJson::fromEntity)
+                .toList();
     }
 
 }
