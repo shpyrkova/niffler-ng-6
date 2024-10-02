@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AuthorityDao {
 
-    AuthorityEntity[] create(AuthorityEntity[] authorityEntities);
+    List<AuthorityEntity> create(AuthorityEntity... authorityEntities);
 
     void delete(AuthorityEntity authority);
 

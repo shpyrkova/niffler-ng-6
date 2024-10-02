@@ -19,8 +19,8 @@ public class AuthorityDaoJdbc implements AuthorityDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public AuthorityEntity[] create(AuthorityEntity[] authorityEntities) {
-        Arrays.stream(authorityEntities).forEach(ae -> {
+    public List<AuthorityEntity> create(AuthorityEntity... authority) {
+        Arrays.stream(authority).forEach(ae -> {
             try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                     "INSERT INTO authority (user_id, authority) " +
                             "VALUES (?, ?)",
@@ -43,7 +43,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
                 throw new RuntimeException(e);
             }
         });
-        return authorityEntities;
+        return List.of(authority);
     }
 
     @Override

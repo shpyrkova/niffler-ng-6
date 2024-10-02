@@ -53,13 +53,6 @@ public class UsersDbClient {
             CFG.userdataJdbcUrl()
     );
 
-    public UserJson createUser(UserJson user) {
-        UserEntity userEntity = UserEntity.fromJson(user);
-        return UserJson.fromEntity(
-                userDao.create(userEntity)
-        );
-    }
-
     public UserJson findUserById(UUID id) {
         return UserJson
                 .fromEntity(userDao.findById(id)
@@ -72,12 +65,7 @@ public class UsersDbClient {
                         .orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    public void deleteUser(UserJson user) {
-        UserEntity userEntity = UserEntity.fromJson(user);
-        userDao.delete(userEntity);
-    }
-
-    public UserJson createUserdataAndAuthUser(UserJson user) {
+    public UserJson createUser(UserJson user) {
         return xaTransactionTemplate.execute(() -> {
                     // создание пользователя и его authorities в auth
                     AuthUserEntity authUser = new AuthUserEntity();
@@ -106,7 +94,7 @@ public class UsersDbClient {
         );
     }
 
-    public void deleteUserdataAndAuthUser(UserJson user) {
+    public void deleteUser(UserJson user) {
         xaTransactionTemplate.execute(() -> {
             // удаление пользователя и его authorities в auth
             AuthUserEntity authUser = new AuthUserEntity();

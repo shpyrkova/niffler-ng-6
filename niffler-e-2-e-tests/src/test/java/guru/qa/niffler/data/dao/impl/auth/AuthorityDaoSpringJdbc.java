@@ -18,7 +18,7 @@ public class AuthorityDaoSpringJdbc implements AuthorityDao {
     private static final Config CFG = Config.getInstance();
 
     @Override
-    public AuthorityEntity[] create(AuthorityEntity... authority) {
+    public List<AuthorityEntity> create(AuthorityEntity... authority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource(CFG.authJdbcUrl()));
         jdbcTemplate.batchUpdate(
                 "INSERT INTO authority (user_id, authority) VALUES (? , ?)",
@@ -35,7 +35,7 @@ public class AuthorityDaoSpringJdbc implements AuthorityDao {
                     }
                 }
         );
-        return authority;
+        return List.of(authority);
     }
 
     @Override
