@@ -1,5 +1,6 @@
 package guru.qa.niffler.data.dao.impl.auth;
 
+import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
@@ -11,18 +12,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static guru.qa.niffler.data.tpl.Connections.holder;
+
 public class AuthorityDaoJdbc implements AuthorityDao {
 
-    private final Connection connection;
-
-    public AuthorityDaoJdbc(Connection connection) {
-        this.connection = connection;
-    }
+    private static final Config CFG = Config.getInstance();
 
     @Override
     public AuthorityEntity[] create(AuthorityEntity[] authorityEntities) {
         Arrays.stream(authorityEntities).forEach(ae -> {
-            try (PreparedStatement ps = connection.prepareStatement(
+            try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                     "INSERT INTO authority (user_id, authority) " +
                             "VALUES (?, ?)",
                     Statement.RETURN_GENERATED_KEYS
@@ -49,7 +48,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
 
     @Override
     public void delete(AuthorityEntity authority) {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM authority WHERE user_id = ?"
         )) {
             ps.setObject(1, authority.getUserId().getId());
@@ -61,7 +60,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
 
     @Override
     public List<AuthorityEntity> findAll() {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "SELECT * FROM authority"
         )) {
             ps.execute();

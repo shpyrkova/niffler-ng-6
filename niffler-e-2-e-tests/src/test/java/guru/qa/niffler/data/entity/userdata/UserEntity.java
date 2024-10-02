@@ -40,7 +40,6 @@ public class UserEntity implements Serializable {
     @Column(name = "photo_small", columnDefinition = "bytea")
     private byte[] photoSmall;
 
-    // TODO сейчас все поля обязательны, хотя некоторые могут быть и не заполнены, как это правильно реализовать?
     public static UserEntity fromJson(UserJson json) {
         UserEntity ue = new UserEntity();
         ue.setId(json.id());
@@ -49,8 +48,8 @@ public class UserEntity implements Serializable {
         ue.setFirstname(json.firstname());
         ue.setSurname(json.surname());
         ue.setFullname(json.fullname());
-        ue.setPhoto(json.photo().getBytes(StandardCharsets.UTF_8));
-        ue.setPhotoSmall(json.photo().getBytes(StandardCharsets.UTF_8));
+        ue.setPhoto(json.photo() != null ? json.photo().getBytes(StandardCharsets.UTF_8) : null);
+        ue.setPhotoSmall(json.photoSmall() != null ? json.photoSmall().getBytes(StandardCharsets.UTF_8) : null);
         return ue;
     }
 
