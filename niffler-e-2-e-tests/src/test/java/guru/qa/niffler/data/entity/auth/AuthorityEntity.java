@@ -21,5 +21,5 @@ public class AuthorityEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private AuthUserEntity user;
+    private AuthUserEntity userId;
 }

@@ -52,7 +52,7 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
-    public Optional<SpendEntity> findSpendById(UUID id) {
+    public Optional<SpendEntity> findById(UUID id) {
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT * FROM spend WHERE id = ?"
         )) {
@@ -112,8 +112,36 @@ public class SpendDaoJdbc implements SpendDao {
     }
 
     @Override
-    public void deleteSpend(SpendEntity spend) {
-        Optional<SpendEntity> spendEntity = findSpendById(spend.getId());
+    public List<SpendEntity> findAll() {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM spend"
+        )) {
+            ps.execute();
+            try (ResultSet rs = ps.getResultSet()) {
+                List<SpendEntity> foundEntities = new ArrayList<>();
+                while (rs.next()) {
+                    SpendEntity se = new SpendEntity();
+                    se.setId(rs.getObject("id", UUID.class));
+                    se.setUsername(rs.getString("username"));
+                    se.setSpendDate(rs.getDate("spend_date"));
+                    se.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
+                    se.setAmount(rs.getDouble("amount"));
+                    se.setDescription(rs.getString("description"));
+                    CategoryEntity ce = new CategoryEntity();
+                    ce.setId(UUID.fromString(rs.getString("category_id")));
+                    se.setCategory(ce);
+                    foundEntities.add(se);
+                }
+                    return foundEntities;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(SpendEntity spend) {
+        Optional<SpendEntity> spendEntity = findById(spend.getId());
         if (spendEntity.isPresent()) {
             try (PreparedStatement ps = connection.prepareStatement(
                     "DELETE FROM spend WHERE id = ?"
