@@ -12,7 +12,7 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
-import guru.qa.niffler.model.Authority;
+import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.model.UserJson;
 import org.springframework.data.transaction.ChainedTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
@@ -77,7 +77,7 @@ public class UsersDbClient {
                 AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                         e -> {
                             AuthorityEntity ae = new AuthorityEntity();
-                            ae.setUserId(createdAuthUser);
+                            ae.setUser(createdAuthUser);
                             ae.setAuthority(e);
                             return ae;
                         }
@@ -105,7 +105,7 @@ public class UsersDbClient {
                     AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
                             e -> {
                                 AuthorityEntity ae = new AuthorityEntity();
-                                ae.setUserId(createdAuthUser);
+                                ae.setUser(createdAuthUser);
                                 ae.setAuthority(e);
                                 return ae;
                             }
@@ -126,7 +126,7 @@ public class UsersDbClient {
             authUser.setUsername(user.username());
             authUser.setId(UUID.fromString("716193a0-80b4-11ef-81d0-0242ac110004")); // пока никуда не выносили
             AuthorityEntity ae = new AuthorityEntity();
-            ae.setUserId(authUser);
+            ae.setUser(authUser);
             authorityDao.delete(ae);
 
             authUserDao.delete(authUser);

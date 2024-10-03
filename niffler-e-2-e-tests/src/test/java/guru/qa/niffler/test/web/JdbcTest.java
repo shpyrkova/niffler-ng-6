@@ -50,7 +50,7 @@ public class JdbcTest {
         UserJson user = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        "valentin-12",
+                        "valentin-120",
                         null,
                         null,
                         null,
@@ -72,7 +72,7 @@ public class JdbcTest {
         UserJson user = usersDbClient.createUserSpringChainedTransaction(
                 new UserJson(
                         null,
-                        "petr3",
+                        "petr5",
                         null,
                         null,
                         null,
@@ -99,6 +99,13 @@ public class JdbcTest {
                         null
                 )
         );
+    }
+
+    @Test
+    void findUserById() {
+        UsersDbClient usersDbClient = new UsersDbClient();
+        UserJson user = usersDbClient.findUserById(UUID.fromString("b69de36e-8065-11ef-8717-0242ac110004"));
+        System.out.println(user);
     }
 
 }
