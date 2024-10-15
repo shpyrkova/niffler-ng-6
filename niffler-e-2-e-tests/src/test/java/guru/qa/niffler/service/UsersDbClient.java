@@ -11,6 +11,8 @@ import guru.qa.niffler.data.dao.impl.userdata.UserDaoSpringJdbc;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
+import guru.qa.niffler.data.repository.UserRepository;
+import guru.qa.niffler.data.repository.impl.UserRepositoryJdbc;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.model.UserJson;
@@ -39,6 +41,8 @@ public class UsersDbClient {
     // SPRING-JDBC DAO
     private final UserDao userDaoSpringJdbc = new UserDaoSpringJdbc();
 
+    private final UserRepository userRepository = new UserRepositoryJdbc();
+
     private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
             CFG.authJdbcUrl(),
             CFG.userdataJdbcUrl()
@@ -65,28 +69,28 @@ public class UsersDbClient {
 
     public UserJson createUserSpringChainedTransaction(UserJson user) {
         return springChainedTxTemplate.execute(status -> {
-                AuthUserEntity authUser = new AuthUserEntity();
-                authUser.setUsername(user.username());
-                authUser.setPassword(pe.encode("00000000"));
-                authUser.setEnabled(true);
-                authUser.setAccountNonExpired(true);
-                authUser.setAccountNonLocked(true);
-                authUser.setCredentialsNonExpired(true);
+            AuthUserEntity authUser = new AuthUserEntity();
+            authUser.setUsername(user.username());
+            authUser.setPassword(pe.encode("00000000"));
+            authUser.setEnabled(true);
+            authUser.setAccountNonExpired(true);
+            authUser.setAccountNonLocked(true);
+            authUser.setCredentialsNonExpired(true);
 
-                AuthUserEntity createdAuthUser = authUserDao.create(authUser);
-                AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
-                        e -> {
-                            AuthorityEntity ae = new AuthorityEntity();
-                            ae.setUser(createdAuthUser);
-                            ae.setAuthority(e);
-                            return ae;
-                        }
-                ).toArray(AuthorityEntity[]::new);
+            AuthUserEntity createdAuthUser = authUserDao.create(authUser);
+            AuthorityEntity[] authorityEntities = Arrays.stream(Authority.values()).map(
+                    e -> {
+                        AuthorityEntity ae = new AuthorityEntity();
+                        ae.setUser(createdAuthUser);
+                        ae.setAuthority(e);
+                        return ae;
+                    }
+            ).toArray(AuthorityEntity[]::new);
 
-                authorityDao.create(authorityEntities);
+            authorityDao.create(authorityEntities);
 
-                UserEntity createdUser = userDao.create(UserEntity.fromJson(user));
-                return UserJson.fromEntity(createdUser);
+            UserEntity createdUser = userDao.create(UserEntity.fromJson(user));
+            return UserJson.fromEntity(createdUser);
         });
     }
 
@@ -147,6 +151,18 @@ public class UsersDbClient {
         return userEntities.stream()
                 .map(UserJson::fromEntity)
                 .toList();
+    }
+
+    public void addInvitation(UserJson requester, UserJson addressee) {
+        UserEntity requesterEntity = UserEntity.fromJson(requester);
+        UserEntity addresseeEntity = UserEntity.fromJson(addressee);
+        userRepository.addInvitation(requesterEntity, addresseeEntity);
+    }
+
+    public void addFriend(UserJson requester, UserJson addressee) {
+        UserEntity requesterEntity = UserEntity.fromJson(requester);
+        UserEntity addresseeEntity = UserEntity.fromJson(addressee);
+        userRepository.addFriend(requesterEntity, addresseeEntity);
     }
 
 }

@@ -10,10 +10,7 @@ import guru.qa.niffler.data.repository.AuthUserRepository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
@@ -63,7 +60,7 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
     @Override
     public Optional<AuthUserEntity> findById(UUID id) {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
-                "select * from \"user\" u join authority a on u.id = a.user_id where u.id = ?"
+                "SELECT * FROM \"user\" U JOIN authority a ON u.id = a.user_id WHERE u.id = ?"
         )) {
             ps.setObject(1, id);
 
