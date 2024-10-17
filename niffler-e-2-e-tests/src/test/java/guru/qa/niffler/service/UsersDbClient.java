@@ -22,6 +22,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -159,7 +160,7 @@ public class UsersDbClient {
         userRepository.addInvitation(requesterEntity, addresseeEntity);
     }
 
-    public void addFriend(UserJson requester, UserJson addressee) {
+    public void addFriend(UserJson requester, UserJson addressee) throws SQLException {
         UserEntity requesterEntity = UserEntity.fromJson(requester);
         UserEntity addresseeEntity = UserEntity.fromJson(addressee);
         userRepository.addFriend(requesterEntity, addresseeEntity);

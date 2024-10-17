@@ -8,6 +8,7 @@ import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -129,7 +130,7 @@ public class JdbcTest {
     }
 
     @Test
-    void createFriendJdbcTest() {
+    void createFriendJdbcTest() throws SQLException {
         UserJson user = usersDbClient.createUser(
                 new UserJson(
                         null,

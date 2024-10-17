@@ -6,10 +6,7 @@ import guru.qa.niffler.data.entity.userdata.UserEntity;
 import guru.qa.niffler.data.repository.UserRepository;
 import guru.qa.niffler.model.CurrencyValues;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
@@ -148,28 +145,19 @@ public class UserRepositoryJdbc implements UserRepository {
     }
 
     @Override
-    public void addFriend(UserEntity requester, UserEntity addressee) {
+    public void addFriend(UserEntity requester, UserEntity addressee) throws SQLException {
         // результатом принятия приглашения на дружбу в БД являются две строки
-        try (PreparedStatement rFriend = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "INSERT INTO friendship (requester_id, addressee_id, status) " +
-                        "VALUES (?, ?, ?)"
-        ); PreparedStatement aFriend = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "INSERT INTO friendship (requester_id, addressee_id, status) " +
-                        "VALUES (?, ?, ?)"
-        )) {
-            // статус Accepted, где requester_id - requester
-            rFriend.setObject(1, requester.getId());
-            rFriend.setObject(2, addressee.getId());
-            rFriend.setString(3, String.valueOf(FriendshipStatus.ACCEPTED));
-            rFriend.executeUpdate();
+            insertFriendship(requester.getId(), addressee.getId());
+            insertFriendship(addressee.getId(), requester.getId());
+        }
 
-            // статус Accepted, где requester_id - addressee
-            aFriend.setObject(1, addressee.getId());
-            aFriend.setObject(2, requester.getId());
-            aFriend.setString(3, String.valueOf(FriendshipStatus.ACCEPTED));
-            aFriend.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+    private void insertFriendship(UUID requester, UUID addressee) throws SQLException {
+        try (PreparedStatement stmt = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+                "INSERT INTO friendship (requester_id, addressee_id, status) VALUES (?, ?, ?)")) {
+            stmt.setObject(1, requester);
+            stmt.setObject(2, addressee);
+            stmt.setString(3, FriendshipStatus.ACCEPTED.toString());
+            stmt.executeUpdate();
         }
     }
 
