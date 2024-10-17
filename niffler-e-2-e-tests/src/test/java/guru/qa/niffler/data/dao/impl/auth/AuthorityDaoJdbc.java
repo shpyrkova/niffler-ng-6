@@ -4,7 +4,7 @@ import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.dao.AuthorityDao;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
-import guru.qa.niffler.model.Authority;
+import guru.qa.niffler.data.entity.auth.Authority;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
                             "VALUES (?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             )) {
-                ps.setObject(1, ae.getUserId().getId());
+                ps.setObject(1, ae.getUser().getId());
                 ps.setString(2, ae.getAuthority().toString());
                 ps.executeUpdate();
 
@@ -51,7 +51,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(
                 "DELETE FROM authority WHERE user_id = ?"
         )) {
-            ps.setObject(1, authority.getUserId().getId());
+            ps.setObject(1, authority.getUser().getId());
             ps.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -71,7 +71,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
                     AuthUserEntity aue = new AuthUserEntity();
                     aue.setId(rs.getObject("user_id", UUID.class));
                     ae.setId(rs.getObject("id", UUID.class));
-                    ae.setUserId(aue);
+                    ae.setUser(aue);
                     ae.setAuthority(Authority.valueOf(rs.getString("authority")));
                     foundEntities.add(ae);
                 }

@@ -8,24 +8,26 @@ import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
+import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
 public class JdbcTest {
+
+    UsersDbClient usersDbClient = new UsersDbClient();
 
     // Spring-JDBC
     @Test
     void testFindAllUdUsersSpring() {
-        UsersDbClient usersDbClient = new UsersDbClient();
         System.out.println(usersDbClient.findAllUsersSpringJdbc());
     }
 
     // JDBC no Tx
     @Test
     void testFindAllUdUsers() {
-        UsersDbClient usersDbClient = new UsersDbClient();
         System.out.println(usersDbClient.findAllUsers());
     }
 
@@ -46,11 +48,10 @@ public class JdbcTest {
     // JDBC + XaTx
     @Test
     void createUserJdbcTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
         UserJson user = usersDbClient.createUser(
                 new UserJson(
                         null,
-                        "valentin-12",
+                        "valentin-120",
                         null,
                         null,
                         null,
@@ -68,11 +69,10 @@ public class JdbcTest {
     * */
     @Test
     void failedChainedTxTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
         UserJson user = usersDbClient.createUserSpringChainedTransaction(
                 new UserJson(
                         null,
-                        "petr3",
+                        "petr5",
                         null,
                         null,
                         null,
@@ -86,7 +86,6 @@ public class JdbcTest {
 
     @Test
     void deleteUserJdbcTest() {
-        UsersDbClient usersDbClient = new UsersDbClient();
         usersDbClient.deleteUser(
                 new UserJson(
                         UUID.fromString("7163fa32-80b4-11ef-9221-0242ac110004"),
@@ -99,6 +98,70 @@ public class JdbcTest {
                         null
                 )
         );
+    }
+
+    @Test
+    void createInvitationJdbcTest() {
+        UserJson user = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                         null,
+                        CurrencyValues.EUR,
+                        null,
+                        null
+                )
+        );
+        UserJson requester = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.EUR,
+                        null,
+                        null
+                )
+        );
+        usersDbClient.addInvitation(user, requester);
+    }
+
+    @Test
+    void createFriendJdbcTest() throws SQLException {
+        UserJson user = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.EUR,
+                        null,
+                        null
+                )
+        );
+        UserJson requester = usersDbClient.createUser(
+                new UserJson(
+                        null,
+                        randomUsername(),
+                        null,
+                        null,
+                        null,
+                        CurrencyValues.EUR,
+                        null,
+                        null
+                )
+        );
+        usersDbClient.addFriend(user, requester);
+    }
+
+    @Test
+    void findUserById() {
+        UserJson user = usersDbClient.findUserById(UUID.fromString("b69de36e-8065-11ef-8717-0242ac110004"));
+        System.out.println(user);
     }
 
 }
