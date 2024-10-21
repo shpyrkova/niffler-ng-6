@@ -3,7 +3,7 @@ package guru.qa.niffler.data.repository.impl;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.userdata.FriendshipStatus;
 import guru.qa.niffler.data.entity.userdata.UserEntity;
-import guru.qa.niffler.data.repository.UserRepository;
+import guru.qa.niffler.data.repository.UserdataUserRepository;
 import guru.qa.niffler.model.CurrencyValues;
 
 import java.sql.*;
@@ -11,7 +11,7 @@ import java.util.*;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UserRepositoryJdbc implements UserRepository {
+public class UserRepositoryJdbc implements UserdataUserRepository {
 
     private static final Config CFG = Config.getInstance();
 
