@@ -7,7 +7,6 @@ import guru.qa.niffler.data.repository.UserdataUserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +23,12 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
         entityManager.joinTransaction();
         entityManager.persist(user);
         return user;
+    }
+
+    @Override
+    public UserEntity update(UserEntity user) {
+        entityManager.joinTransaction();
+        return entityManager.merge(user);
     }
 
     @Override
@@ -47,24 +52,9 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     }
 
     @Override
-    public List<UserEntity> findAll() {
-        return List.of();
-    }
-
-    @Override
     public void addInvitation(UserEntity requester, UserEntity addressee) {
         entityManager.joinTransaction();
-        addressee.addFriends(FriendshipStatus.PENDING, requester);
-    }
-
-    public void addIncomeInvitation(UserEntity requester, UserEntity addressee) {
-        entityManager.joinTransaction();
-        addressee.addFriends(FriendshipStatus.PENDING, requester);
-    }
-
-    public void addOutcomeInvitation(UserEntity requester, UserEntity addressee) {
-        entityManager.joinTransaction();
-        requester.addFriends(FriendshipStatus.PENDING, addressee);
+        addressee.addInvitations(requester);
     }
 
     @Override
@@ -75,7 +65,9 @@ public class UserdataUserRepositoryHibernate implements UserdataUserRepository {
     }
 
     @Override
-    public void delete(UserEntity user) {
-
+    public void remove(UserEntity user) {
+        entityManager.joinTransaction();
+        UserEntity foundUser = entityManager.find(UserEntity.class, user.getId());
+        entityManager.remove(foundUser);
     }
 }

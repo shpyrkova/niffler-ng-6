@@ -8,33 +8,18 @@ import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
-import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 
 public class JdbcTest {
 
     UsersDbClient usersDbClient = new UsersDbClient();
+    SpendDbClient spendDbClient = new SpendDbClient();
 
-    // Spring-JDBC
     @Test
-    void testFindAllUdUsersSpring() {
-        System.out.println(usersDbClient.findAllUsersSpringJdbc());
-    }
-
-    // JDBC no Tx
-    @Test
-    void testFindAllUdUsers() {
-        System.out.println(usersDbClient.findAllUsers());
-    }
-
-    // JDBC Tx
-    @Test
-    void createSpendingTxJdbc() {
-        SpendDbClient spendDbClient = new SpendDbClient();
+    void createSpendTest() {
         SpendJson spendJson = new SpendJson(null,
                 new Date(),
                 new CategoryJson(null, randomCategoryName(), "giraffe", true),
@@ -45,51 +30,24 @@ public class JdbcTest {
         System.out.println(spendDbClient.createSpend(spendJson));
     }
 
-    // JDBC + XaTx
     @Test
-    void createUserJdbcTest() {
-        UserJson user = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        "valentin-120",
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null
-                )
-        );
-        System.out.println(user);
+    void findCategoryByUsernameAndCategoryNameTest() {
+        CategoryJson category = new CategoryJson(null, "seven eleven", "dasha", false);
+        System.out.println(spendDbClient.findCategoryByUsernameAndCategoryName(category));
     }
 
-    // Spring-JDBC Tx
-    /* Задание 2. Доказать возможность / невозможность отката внутренней транзакции при сбое во внешней, с применением ChainedTransactionManager
-    Если падает вторая транзакция в ChainedTransactionManager, то первая транзакция не откатывается, проверено
-    * */
     @Test
-    void failedChainedTxTest() {
-        UserJson user = usersDbClient.createUserSpringChainedTransaction(
-                new UserJson(
-                        null,
-                        "petr5",
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null
-                )
-        );
+    void createUserTest() {
+        UserJson user = usersDbClient.createUser("petr-17", "00000000");
         System.out.println(user);
     }
 
     @Test
-    void deleteUserJdbcTest() {
-        usersDbClient.deleteUser(
+    void deleteUserHibernateTest() {
+        usersDbClient.deleteUserHibernate(
                 new UserJson(
-                        UUID.fromString("7163fa32-80b4-11ef-9221-0242ac110004"),
-                        "valentin-12",
+                        UUID.fromString("b95c5bc2-904f-11ef-b535-0242ac110004"),
+                        "petr-12",
                         null,
                         null,
                         null,
@@ -101,66 +59,28 @@ public class JdbcTest {
     }
 
     @Test
-    void createInvitationJdbcTest() {
-        UserJson user = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                         null,
-                        CurrencyValues.EUR,
-                        null,
-                        null
-                )
-        );
-        UserJson requester = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.EUR,
-                        null,
-                        null
-                )
-        );
-        usersDbClient.addInvitation(user, requester);
+    void createInvitationHibernateTest() {
+        UserJson addressee = new UserJson(UUID.fromString("30d0b6a9-91b2-4519-b43a-6b4d4943c42b"), "petr-20", null, null, null, null, null, null);
+        UserJson requester = new UserJson(UUID.fromString("62502cb9-2c0e-49fd-bb85-446478fb7398"), "petr-19", null, null, null, null, null, null);
+        usersDbClient.addIncomeInvitation(addressee, 1);
+        usersDbClient.addOutcomeInvitation(requester, 1);
     }
 
     @Test
-    void createFriendJdbcTest() throws SQLException {
-        UserJson user = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.EUR,
-                        null,
-                        null
-                )
-        );
-        UserJson requester = usersDbClient.createUser(
-                new UserJson(
-                        null,
-                        randomUsername(),
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.EUR,
-                        null,
-                        null
-                )
-        );
-        usersDbClient.addFriend(user, requester);
+    void createFriendTest() {
+        UserJson addressee = new UserJson(UUID.fromString("8fc6b029-ab3b-4545-a29e-c9ea7ec27cb1"), "petr-23", null, null, null, null, null, null);
+        usersDbClient.addFriend(addressee, 1);
     }
 
     @Test
     void findUserById() {
         UserJson user = usersDbClient.findUserById(UUID.fromString("b69de36e-8065-11ef-8717-0242ac110004"));
+        System.out.println(user);
+    }
+
+    @Test
+    void findUserByUsername() {
+        UserJson user = usersDbClient.findUserByUsername("petr-22");
         System.out.println(user);
     }
 
