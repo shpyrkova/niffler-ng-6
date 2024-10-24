@@ -11,4 +11,6 @@ public interface SpendClient {
 
     CategoryJson findCategoryByUsernameAndCategoryName(CategoryJson category);
 
+    void removeCategory(CategoryJson category);
+
 }

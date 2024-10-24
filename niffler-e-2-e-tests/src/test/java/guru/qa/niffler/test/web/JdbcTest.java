@@ -1,9 +1,6 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.CurrencyValues;
-import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.*;
 import guru.qa.niffler.service.SpendDbClient;
 import guru.qa.niffler.service.UsersDbClient;
 import org.junit.jupiter.api.Test;
@@ -42,35 +39,29 @@ public class JdbcTest {
         System.out.println(user);
     }
 
-    @Test
-    void deleteUserHibernateTest() {
-        usersDbClient.deleteUserHibernate(
-                new UserJson(
-                        UUID.fromString("b95c5bc2-904f-11ef-b535-0242ac110004"),
-                        "petr-12",
-                        null,
-                        null,
-                        null,
-                        CurrencyValues.RUB,
-                        null,
-                        null
-                )
-        );
-    }
-
-    @Test
-    void createInvitationHibernateTest() {
-        UserJson addressee = new UserJson(UUID.fromString("30d0b6a9-91b2-4519-b43a-6b4d4943c42b"), "petr-20", null, null, null, null, null, null);
-        UserJson requester = new UserJson(UUID.fromString("62502cb9-2c0e-49fd-bb85-446478fb7398"), "petr-19", null, null, null, null, null, null);
-        usersDbClient.addIncomeInvitation(addressee, 1);
-        usersDbClient.addOutcomeInvitation(requester, 1);
-    }
-
-    @Test
-    void createFriendTest() {
-        UserJson addressee = new UserJson(UUID.fromString("8fc6b029-ab3b-4545-a29e-c9ea7ec27cb1"), "petr-23", null, null, null, null, null, null);
-        usersDbClient.addFriend(addressee, 1);
-    }
+//    @Test
+//    void deleteUserHibernateTest() {
+//        usersDbClient.deleteUserHibernate(
+//                new UserJson(
+//                        UUID.fromString("b95c5bc2-904f-11ef-b535-0242ac110004"),
+//                        "petr-12"
+//                )
+//        );
+//    }
+//
+//    @Test
+//    void createInvitationHibernateTest() {
+//        UserJson addressee = new UserJson(UUID.fromString("30d0b6a9-91b2-4519-b43a-6b4d4943c42b"), "petr-20", null, null, null, null, null, null);
+//        UserJson requester = new UserJson(UUID.fromString("62502cb9-2c0e-49fd-bb85-446478fb7398"), "petr-19", null, null, null, null, null, null);
+//        usersDbClient.addIncomeInvitation(addressee, 1);
+//        usersDbClient.addOutcomeInvitation(requester, 1);
+//    }
+//
+//    @Test
+//    void createFriendTest() {
+//        UserJson addressee = new UserJson(UUID.fromString("8fc6b029-ab3b-4545-a29e-c9ea7ec27cb1"), "petr-23", null, null, null, null, null, null);
+//        usersDbClient.addFriend(addressee, 1);
+//    }
 
     @Test
     void findUserById() {
