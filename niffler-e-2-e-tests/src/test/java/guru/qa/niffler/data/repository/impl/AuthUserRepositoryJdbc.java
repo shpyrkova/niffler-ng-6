@@ -178,9 +178,9 @@ public class AuthUserRepositoryJdbc implements AuthUserRepository {
         Connection connection = holder(CFG.authJdbcUrl()).connection();
         if (userEntity.isPresent()) {
             try (PreparedStatement deleteUserPs = connection.prepareStatement(
-                    "DELETE FROM \"user\" WHERE id = ?");
+                    "DELETE FROM authority WHERE user_id = ?");
                  PreparedStatement deleteAuthorityPs = connection.prepareStatement(
-                         "DELETE FROM authority WHERE user_id = ?")
+                         "DELETE FROM \"user\" WHERE id = ?")
             ) {
                 deleteAuthorityPs.setObject(1, user.getId());
                 deleteAuthorityPs.executeUpdate();
