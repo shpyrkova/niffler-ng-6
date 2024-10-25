@@ -1,123 +1,77 @@
 package guru.qa.niffler.service;
 
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.data.dao.CategoryDao;
-import guru.qa.niffler.data.dao.SpendDao;
-import guru.qa.niffler.data.dao.impl.spend.CategoryDaoJdbc;
-import guru.qa.niffler.data.dao.impl.spend.CategoryDaoSpringJdbc;
-import guru.qa.niffler.data.dao.impl.spend.SpendDaoJdbc;
-import guru.qa.niffler.data.dao.impl.spend.SpendDaoSpringJdbc;
 import guru.qa.niffler.data.entity.spend.CategoryEntity;
 import guru.qa.niffler.data.entity.spend.SpendEntity;
-import guru.qa.niffler.data.tpl.JdbcTransactionTemplate;
+import guru.qa.niffler.data.repository.SpendRepository;
+import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
+import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
 
-import java.sql.SQLException;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-public class SpendDbClient {
+public class SpendDbClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
 
-    private final CategoryDao categoryDao = new CategoryDaoJdbc();
-    private final SpendDao spendDao = new SpendDaoJdbc();
-    private final CategoryDao categoryDaoSpringJdbc = new CategoryDaoSpringJdbc();
-    private final SpendDao spendDaoSpringJdbc = new SpendDaoSpringJdbc();
+    private final SpendRepository spendRepository = new SpendRepositoryHibernate();
 
-    private final JdbcTransactionTemplate jdbcTxTemplate = new JdbcTransactionTemplate(
+    private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
             CFG.spendJdbcUrl()
     );
 
+    @Override
     public SpendJson createSpend(SpendJson spend) {
-        return jdbcTxTemplate.execute(() -> {
-            SpendEntity spendEntity = SpendEntity.fromJson(spend);
-            if (spendEntity.getCategory().getId() == null) {
-                CategoryEntity categoryEntity = categoryDao.create(spendEntity.getCategory());
-                spendEntity.setCategory(categoryEntity);
-            }
-            return SpendJson.fromEntity(
-                    spendDao.create(spendEntity)
-            );
+        return xaTransactionTemplate.execute(() -> {
+                    spendRepository.create(SpendEntity.fromJson(spend));
+                    SpendEntity spendEntity = SpendEntity.fromJson(spend);
+                    return SpendJson.fromEntity(spendEntity);
+                }
+        );
+    }
+
+    @Override
+    public CategoryJson createCategory(CategoryJson category) {
+        return xaTransactionTemplate.execute(() -> {
+            CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
+            CategoryEntity createdCategoryEntity = spendRepository.createCategory(categoryEntity);
+            return CategoryJson.fromEntity(createdCategoryEntity);
         });
     }
 
-    public CategoryJson createCategory(CategoryJson category) {
-        CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-        return CategoryJson.fromEntity(categoryDao.create(categoryEntity));
-    }
-
+    @Override
     public CategoryJson findCategoryByUsernameAndCategoryName(CategoryJson category) {
-        return CategoryJson.fromEntity(categoryDao
-                .findByUsernameAndCategoryName(category.username(), category.name())
-                .orElseThrow(() -> new RuntimeException("Category not found")));
-    }
-
-    public List<CategoryJson> findAllCategoriesByUsername(String username) {
-        List<CategoryEntity> categoryEntities = categoryDao.findAllByUsername(username);
-        return categoryEntities.stream()
-                .map(CategoryJson::fromEntity)
-                .toList();
+        return xaTransactionTemplate.execute(() -> {
+            Optional<CategoryEntity> foundCategory = spendRepository
+                    .findCategoryByUsernameAndCategoryName(category.username(), category.name());
+            return CategoryJson
+                    .fromEntity(foundCategory
+                            .orElseThrow(() -> new RuntimeException("Category not found")));
+        });
     }
 
     public void deleteCategory(CategoryJson category) {
-        CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-        categoryDao.delete(categoryEntity);
+        xaTransactionTemplate.execute(() -> {
+            spendRepository.removeCategory(CategoryEntity.fromJson(category));
+        });
     }
 
     public SpendJson findSpendById(UUID id) {
-        SpendEntity spendEntity = spendDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("Spend not found"));
-        // заполняем данные по категории именно здесь, так как в DAO мы должны работать только с одной таблицей
-        CategoryEntity categoryEntity = categoryDao
-                .findById(spendEntity.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-        spendEntity.setCategory(categoryEntity);
-        return SpendJson.fromEntity(spendEntity);
-    }
-
-    public List<SpendJson> findAllSpendingsByUsername(String username) {
-        List<SpendEntity> spendEntities = spendDao.findAllByUsername(username);
-        spendEntities.forEach(se -> se.setCategory(categoryDao
-                .findById(se.getCategory().getId())
-                .orElseThrow(() -> new RuntimeException("Category not found"))));
-        return spendEntities.stream()
-                .map(SpendJson::fromEntity)
-                .toList();
+        return xaTransactionTemplate.execute(() -> {
+            Optional<SpendEntity> foundSpend = spendRepository
+                    .findById(id);
+            return SpendJson
+                    .fromEntity(foundSpend
+                            .orElseThrow(() -> new RuntimeException("Spend not found")));
+        });
     }
 
     public void deleteSpend(SpendJson spend) {
-        SpendEntity spendEntity = SpendEntity.fromJson(spend);
-        spendDao.delete(spendEntity);
-    }
-
-    public List<SpendJson> findAllSpendings() throws SQLException {
-        List<SpendEntity> spendEntities = spendDao.findAll();
-        return spendEntities.stream()
-                .map(SpendJson::fromEntity)
-                .toList();
-    }
-
-    public List<SpendJson> findAllSpendingsSpringJdbc() {
-        List<SpendEntity> spendEntities = spendDaoSpringJdbc.findAll();
-        return spendEntities.stream()
-                .map(SpendJson::fromEntity)
-                .toList();
-    }
-
-    public List<CategoryJson> findAllCategories() throws SQLException {
-        List<CategoryEntity> categoryEntities = categoryDao.findAll();
-        return categoryEntities.stream()
-                .map(CategoryJson::fromEntity)
-                .toList();
-    }
-
-    public List<CategoryJson> findAllCategoriesSpringJdbc() {
-        List<CategoryEntity> categoryEntities = categoryDaoSpringJdbc.findAll();
-        return categoryEntities.stream()
-                .map(CategoryJson::fromEntity)
-                .toList();
+        xaTransactionTemplate.execute(() -> {
+            spendRepository.remove(SpendEntity.fromJson(spend));
+        });
     }
 
 }

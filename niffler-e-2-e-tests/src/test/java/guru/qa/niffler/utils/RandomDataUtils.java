@@ -7,7 +7,7 @@ public class RandomDataUtils {
     private static final Faker faker = new Faker();
 
     public static String randomUsername() {
-        return faker.internet().domainWord();
+        return faker.name().username();
     }
 
     public static String randomCategoryName() {

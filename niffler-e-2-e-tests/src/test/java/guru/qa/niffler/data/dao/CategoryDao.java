@@ -20,4 +20,6 @@ public interface CategoryDao {
 
     void delete(CategoryEntity category);
 
+    CategoryEntity update(CategoryEntity category);
+
 }

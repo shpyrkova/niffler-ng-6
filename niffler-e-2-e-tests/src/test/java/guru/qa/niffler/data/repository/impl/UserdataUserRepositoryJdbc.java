@@ -11,7 +11,7 @@ import java.util.*;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
-public class UserRepositoryJdbc implements UserdataUserRepository {
+public class UserdataUserRepositoryJdbc implements UserdataUserRepository {
 
     private static final Config CFG = Config.getInstance();
 
@@ -40,6 +40,30 @@ public class UserRepositoryJdbc implements UserdataUserRepository {
                 }
             }
             user.setId(generatedKey);
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public UserEntity update(UserEntity user) {
+        try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
+                "UPDATE \"user\" SET " +
+                        "currency = ?, " +
+                        "firstname = ?, " +
+                        "surname = ?, " +
+                        "photo = ?, " +
+                        "photo_small = ? " +
+                        "full_name = ? " +
+                        "WHERE id = ? ")) {
+            ps.setString(1, user.getCurrency().name());
+            ps.setString(2, user.getFirstname());
+            ps.setString(3, user.getSurname());
+            ps.setBytes(4, user.getPhoto());
+            ps.setBytes(5, user.getPhotoSmall());
+            ps.setString(6, user.getFullname());
+            ps.executeUpdate();
             return user;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -103,33 +127,6 @@ public class UserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public List<UserEntity> findAll() {
-        try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
-                "SELECT * FROM \"user\""
-        )) {
-            ps.execute();
-            try (ResultSet rs = ps.getResultSet()) {
-                List<UserEntity> foundEntities = new ArrayList<>();
-                while (rs.next()) {
-                    UserEntity ue = new UserEntity();
-                    ue.setId(rs.getObject("id", UUID.class));
-                    ue.setUsername(rs.getString("username"));
-                    ue.setCurrency(CurrencyValues.valueOf(rs.getString("currency")));
-                    ue.setFirstname(rs.getString("firstname"));
-                    ue.setSurname(rs.getString("surname"));
-                    ue.setPhoto(rs.getBytes("photo"));
-                    ue.setPhotoSmall(rs.getBytes("photo_small"));
-                    ue.setFullname(rs.getString("full_name"));
-                    foundEntities.add(ue);
-                }
-                return foundEntities;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void addInvitation(UserEntity requester, UserEntity addressee) {
         try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO friendship (requester_id, addressee_id, status) " +
@@ -145,24 +142,26 @@ public class UserRepositoryJdbc implements UserdataUserRepository {
     }
 
     @Override
-    public void addFriend(UserEntity requester, UserEntity addressee) throws SQLException {
+    public void addFriend(UserEntity requester, UserEntity addressee) {
         // результатом принятия приглашения на дружбу в БД являются две строки
-            insertFriendship(requester.getId(), addressee.getId());
-            insertFriendship(addressee.getId(), requester.getId());
-        }
+        insertFriendship(requester.getId(), addressee.getId());
+        insertFriendship(addressee.getId(), requester.getId());
+    }
 
-    private void insertFriendship(UUID requester, UUID addressee) throws SQLException {
+    private void insertFriendship(UUID requester, UUID addressee) {
         try (PreparedStatement stmt = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(
                 "INSERT INTO friendship (requester_id, addressee_id, status) VALUES (?, ?, ?)")) {
             stmt.setObject(1, requester);
             stmt.setObject(2, addressee);
             stmt.setString(3, FriendshipStatus.ACCEPTED.toString());
             stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void delete(UserEntity user) {
+    public void remove(UserEntity user) {
         Optional<UserEntity> userEntity = findById(user.getId());
         if (userEntity.isPresent()) {
             try (PreparedStatement ps = holder(CFG.userdataJdbcUrl()).connection().prepareStatement(

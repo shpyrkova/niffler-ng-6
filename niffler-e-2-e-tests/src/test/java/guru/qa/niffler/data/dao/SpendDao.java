@@ -18,4 +18,6 @@ public interface SpendDao {
 
     void delete(SpendEntity spend);
 
+    SpendEntity update(SpendEntity spend);
+
 }
