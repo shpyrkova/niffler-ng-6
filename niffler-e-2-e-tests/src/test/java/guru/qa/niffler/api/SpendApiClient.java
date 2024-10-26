@@ -2,8 +2,6 @@ package guru.qa.niffler.api;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.CurrencyValues;
-import guru.qa.niffler.model.PeriodValues;
 import guru.qa.niffler.model.SpendJson;
 import lombok.SneakyThrows;
 import retrofit2.Response;
@@ -64,23 +62,10 @@ public class SpendApiClient {
   }
 
   @SneakyThrows
-  public List<SpendJson> getAllSpends(PeriodValues period, CurrencyValues currency) {
-    final Response<List<SpendJson>> response;
-    try {
-      response = spendApi.getAllSpends(period, currency)
-              .execute();
-    } catch (IOException e) {
-      throw new AssertionError(e);
-    }
-    assertEquals(200, response.code());
-    return response.body();
-  }
-
-  @SneakyThrows
-  public void deleteSpend(List<String> ids) {
+  public void deleteSpend(String username, List<String> ids) {
     final Response<Void> response;
     try {
-      response = spendApi.removeSpend(ids)
+      response = spendApi.removeSpends(username, ids)
               .execute();
     } catch (IOException e) {
       throw new AssertionError(e);
@@ -115,10 +100,10 @@ public class SpendApiClient {
   }
 
   @SneakyThrows
-  public List<CategoryJson> getAllCategories(Boolean excludeArchived) {
+  public List<CategoryJson> getAllCategories(String username) {
     final Response<List<CategoryJson>> response;
     try {
-      response = spendApi.getAllCategories(excludeArchived)
+      response = spendApi.getAllCategories(username)
               .execute();
     } catch (IOException e) {
       throw new AssertionError(e);

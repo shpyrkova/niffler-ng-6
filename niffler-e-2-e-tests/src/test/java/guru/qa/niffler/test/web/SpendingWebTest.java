@@ -1,34 +1,30 @@
 package guru.qa.niffler.test.web;
 
-import com.codeborne.selenide.Selenide;
-import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.Spending;
-import guru.qa.niffler.model.SpendJson;
-import guru.qa.niffler.page.LoginPage;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(BrowserExtension.class)
-public class SpendingWebTest {
-
-    private static final Config CFG = Config.getInstance();
+public class SpendingWebTest extends TestBaseWeb {
 
     @User(
-            username = "dasha",
             spendings = @Spending(
+                    category = "cat_8",
                     description = "Обучение Advanced 2.0",
                     amount = 79990)
     )
+
     @Test
-    void categoryDescriptionShouldBeChangedFromTable(SpendJson spend) {
+    void categoryDescriptionShouldBeChangedFromTable(UserJson user) {
+        String actualDescription = user.testData().spendings().getFirst().description();
         final String newDescription = "Обучение Niffler Next Generation";
 
-        Selenide.open(CFG.frontUrl(), LoginPage.class)
-                .login("dasha", "00000000")
-                .editSpending(spend.description())
+                loginPage.login(user.username(), user.testData().password())
+                .editSpending(actualDescription)
                 .setNewSpendingDescription(newDescription)
                 .save();
 

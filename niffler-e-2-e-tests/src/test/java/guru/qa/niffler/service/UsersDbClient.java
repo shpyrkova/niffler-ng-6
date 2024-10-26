@@ -10,14 +10,17 @@ import guru.qa.niffler.data.repository.impl.*;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static java.util.Objects.requireNonNull;
 
 public class UsersDbClient implements UsersClient {
 
@@ -38,16 +41,28 @@ public class UsersDbClient implements UsersClient {
             CFG.userdataJdbcUrl()
     );
 
+    @Nonnull
     @Override
     public UserJson createUser(String username, String password) {
-        return xaTransactionTemplate.execute(() -> {
-                    AuthUserEntity authUser = authUserEntity(username, password);
-                    authUserRepositoryHibernate.create(authUser);
-                    return UserJson.fromEntity(
-                            userdataUserRepositoryHibernate.create(userEntity(username))
-                    );
-                }
+        return requireNonNull(
+                xaTransactionTemplate.execute(
+                        () -> UserJson.fromEntity(
+                                createNewUser(username, password),
+                                null
+                        ).addTestData(
+                                new TestData(
+                                        password
+                                )
+                        )
+                )
         );
+    }
+
+    @Nonnull
+    private UserEntity createNewUser(String username, String password) {
+        AuthUserEntity authUser = authUserEntity(username, password);
+        authUserRepositoryHibernate.create(authUser);
+        return userdataUserRepositoryHibernate.create(userEntity(username));
     }
 
     @Override
@@ -115,13 +130,13 @@ public class UsersDbClient implements UsersClient {
     public UserJson findUserById(UUID id) {
         return UserJson
                 .fromEntity(userdataUserRepositoryHibernate.findById(id)
-                        .orElseThrow(() -> new RuntimeException("User not found")));
+                        .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
     public UserJson findUserByUsername(String username) {
         return UserJson
                 .fromEntity(userdataUserRepositoryHibernate.findByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("User not found")));
+                        .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
     public void deleteUserHibernate(UserJson user) {

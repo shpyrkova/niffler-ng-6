@@ -25,17 +25,17 @@ public class LoginWebTest extends TestBaseWeb {
     void mainPageShouldBeDisplayedAfterSuccessfulLogin(UserJson user) {
         final String username = user.username();
         final String password = user.testData().password();
-        System.out.println("!!!!!!!!!!" + username);
 
         loginPage.login(username, password);
         mainPage.statisticsHeaderShouldBePresent();
         mainPage.historyOfSpendingsHeaderShouldBePresent();
     }
 
+    @User
     @Test
-    void userShouldStayOnLoginPageAfterLoginWithBadCredentials() {
-        final String username = "zoomer";
-        final String password = "99999999";
+    void userShouldStayOnLoginPageAfterLoginWithBadCredentials(UserJson user) {
+        final String username = user.username();
+        final String password = "wrong_pass";
 
         loginPage.login(username, password);
         loginPage.invalidCredentialsErrorMessageShouldBePresent();
