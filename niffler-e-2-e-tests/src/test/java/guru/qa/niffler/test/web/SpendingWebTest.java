@@ -4,7 +4,6 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.MainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -17,7 +16,6 @@ public class SpendingWebTest extends TestBaseWeb {
                     description = "Обучение Advanced 2.0",
                     amount = 79990)
     )
-
     @Test
     void categoryDescriptionShouldBeChangedFromTable(UserJson user) {
         String actualDescription = user.testData().spendings().getFirst().description();
@@ -28,7 +26,8 @@ public class SpendingWebTest extends TestBaseWeb {
                 .setNewSpendingDescription(newDescription)
                 .save();
 
-        new MainPage().checkThatTableContainsSpending(newDescription);
+        mainPage.checkThatTableContainsSpending(newDescription);
     }
+
 }
 

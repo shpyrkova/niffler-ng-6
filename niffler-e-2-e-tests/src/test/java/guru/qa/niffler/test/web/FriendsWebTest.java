@@ -15,7 +15,7 @@ public class FriendsWebTest extends TestBaseWeb {
         loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.noFriendsMessageShouldBePresent();
+        friendsPage.checkThatNoFriendsMessageIsPresent();
     }
 
     @User(friends = 1)
@@ -24,7 +24,7 @@ public class FriendsWebTest extends TestBaseWeb {
         loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.friendRowShouldBePresent(user.testData().friendsUsernames()[0]);
+        friendsPage.checkThatFriendRowIsPresent(user.testData().friendsUsernames()[0]);
     }
 
     @User(incomeInvitations = 1)
@@ -33,7 +33,7 @@ public class FriendsWebTest extends TestBaseWeb {
         loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.incomeRequestShouldBePresent(user.testData().incomeInvitationsUsernames()[0]);
+        friendsPage.checkThatIncomeRequestIsPresent(user.testData().incomeInvitationsUsernames()[0]);
     }
 
     @User(outcomeInvitations = 1)
@@ -43,7 +43,7 @@ public class FriendsWebTest extends TestBaseWeb {
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
         friendsPage.clickAllPeopleTab();
-        friendsPage.outcomeRequestShouldBePresent(user.testData().outcomeInvitationsUsernames()[0]);
+        friendsPage.checkThatOutcomeRequestIsPresent(user.testData().outcomeInvitationsUsernames()[0]);
     }
 
 }
