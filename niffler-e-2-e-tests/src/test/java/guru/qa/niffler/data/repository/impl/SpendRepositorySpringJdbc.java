@@ -12,6 +12,7 @@ import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,6 +48,13 @@ public class SpendRepositorySpringJdbc implements SpendRepository {
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
         return categoryDao.create(category);
+    }
+
+    @Nonnull
+    @Override
+    public CategoryEntity updateCategory(CategoryEntity category) {
+        categoryDao.update(category);
+        return category;
     }
 
     @Override

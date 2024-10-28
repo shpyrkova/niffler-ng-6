@@ -11,6 +11,7 @@ import guru.qa.niffler.data.mapper.CategoryEntityRowMapper;
 import guru.qa.niffler.data.mapper.SpendEntityRowMapper;
 import guru.qa.niffler.data.repository.SpendRepository;
 
+import javax.annotation.Nonnull;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,6 +49,13 @@ public class SpendRepositoryJdbc implements SpendRepository {
     @Override
     public CategoryEntity createCategory(CategoryEntity category) {
         return categoryDao.create(category);
+    }
+
+    @Nonnull
+    @Override
+    public CategoryEntity updateCategory(CategoryEntity category) {
+        categoryDao.update(category);
+        return category;
     }
 
     @Override

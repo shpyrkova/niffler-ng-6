@@ -8,9 +8,12 @@ import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static java.util.Objects.requireNonNull;
 
 public class SpendDbClient implements SpendClient {
 
@@ -39,6 +42,20 @@ public class SpendDbClient implements SpendClient {
             CategoryEntity createdCategoryEntity = spendRepository.createCategory(categoryEntity);
             return CategoryJson.fromEntity(createdCategoryEntity);
         });
+    }
+
+    @NotNull
+    @Override
+    public CategoryJson updateCategory(CategoryJson category) {
+        return requireNonNull(
+                xaTransactionTemplate.execute(
+                        () -> CategoryJson.fromEntity(
+                                spendRepository.updateCategory(
+                                        CategoryEntity.fromJson(category)
+                                )
+                        )
+                )
+        );
     }
 
     @Override

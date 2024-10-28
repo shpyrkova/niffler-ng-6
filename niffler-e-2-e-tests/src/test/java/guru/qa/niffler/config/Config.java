@@ -1,10 +1,15 @@
 package guru.qa.niffler.config;
 
+import javax.annotation.Nonnull;
+
 public interface Config {
 
-  static Config getInstance() {
-    return LocalConfig.INSTANCE;
+  static @Nonnull Config getInstance() {
+    return "docker".equals(System.getProperty("test.env"))
+            ? DockerConfig.INSTANCE
+            : LocalConfig.INSTANCE;
   }
+
 
   String frontUrl();
 

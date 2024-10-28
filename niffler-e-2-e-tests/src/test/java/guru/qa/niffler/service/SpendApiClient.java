@@ -8,12 +8,14 @@ import guru.qa.niffler.model.SpendJson;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ParametersAreNonnullByDefault
 public class SpendApiClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
@@ -34,10 +36,35 @@ public class SpendApiClient implements SpendClient {
     }
 
     @Override
+    @Nonnull
     public CategoryJson createCategory(CategoryJson category) {
         final Response<CategoryJson> response;
         try {
             response = spendApi.addCategory(category)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        CategoryJson result = requireNonNull(response.body());
+
+        return category.archived()
+                ? updateCategory(
+                new CategoryJson(
+                        result.id(),
+                        result.name(),
+                        result.username(),
+                        true
+                )
+        ) : result;
+    }
+
+    @Override
+    @Nonnull
+    public CategoryJson updateCategory(CategoryJson category) {
+        final Response<CategoryJson> response;
+        try {
+            response = spendApi.editCategory(category)
                     .execute();
         } catch (IOException e) {
             throw new AssertionError(e);

@@ -14,6 +14,8 @@ public interface SpendRepository {
 
     CategoryEntity createCategory(CategoryEntity category);
 
+    CategoryEntity updateCategory(CategoryEntity category);
+
     Optional<CategoryEntity> findCategoryById(UUID id);
 
     Optional<CategoryEntity> findCategoryByUsernameAndCategoryName(String username, String name);

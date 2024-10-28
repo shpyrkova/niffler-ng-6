@@ -6,6 +6,7 @@ import guru.qa.niffler.data.entity.spend.SpendEntity;
 import guru.qa.niffler.data.repository.SpendRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,13 @@ public class SpendRepositoryHibernate implements SpendRepository {
         entityManager.joinTransaction();
         entityManager.persist(category);
         return category;
+    }
+
+    @NotNull
+    @Override
+    public CategoryEntity updateCategory(CategoryEntity category) {
+        entityManager.joinTransaction();
+        return entityManager.merge(category);
     }
 
     @Override
@@ -83,13 +91,13 @@ public class SpendRepositoryHibernate implements SpendRepository {
     @Override
     public void remove(SpendEntity spend) {
         entityManager.joinTransaction();
-        entityManager.remove(spend);
+        entityManager.remove(entityManager.contains(spend) ? spend : entityManager.merge(spend));
     }
 
     @Override
     public void removeCategory(CategoryEntity category) {
         entityManager.joinTransaction();
-        entityManager.remove(category);
+        entityManager.remove(entityManager.contains(category) ? category : entityManager.merge(category));
     }
 
 }
