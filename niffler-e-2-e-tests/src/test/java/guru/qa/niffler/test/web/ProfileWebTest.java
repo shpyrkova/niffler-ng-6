@@ -2,7 +2,7 @@ package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.model.CategoryJson;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.ProfilePage;
 import org.junit.jupiter.api.Test;
 
@@ -10,31 +10,33 @@ public class ProfileWebTest extends TestBaseWeb {
 
     ProfilePage profilePage = new ProfilePage();
 
-    @User(username = "dasha",
-            categories = @Category(archived = false))
+    @User(categories = @Category(archived = false))
     @Test
-    void archiveCategoryTest(CategoryJson category) {
-        loginPage.login("dasha", "00000000");
+    void archiveCategoryTest(UserJson user) {
+        String categoryName = user.testData().categories().getFirst().name();
+
+        loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickProfileLink();
-        profilePage.archiveCategory(category.name());
-        profilePage.categoryDeletedMessageHeaderShouldBePresent(category.name());
-        profilePage.checkCategoryVisibility(category.name(), false);
+        profilePage.archiveCategory(categoryName);
+        profilePage.categoryDeletedMessageHeaderShouldBePresent(categoryName);
+        profilePage.checkCategoryVisibility(categoryName, false);
         profilePage.clickShowArchivedText();
-        profilePage.checkCategoryVisibility(category.name(), true);
+        profilePage.checkCategoryVisibility(categoryName, true);
     }
 
-    @User(username = "dasha",
-            categories = @Category(archived = true))
+    @User(categories = @Category(archived = true))
     @Test
-    void restoreFromArchiveCategoryTest(CategoryJson category) {
-        loginPage.login("dasha", "00000000");
+    void restoreFromArchiveCategoryTest(UserJson user) {
+        String categoryName = user.testData().categories().getFirst().name();
+
+        loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickProfileLink();
         profilePage.clickShowArchivedText();
-        profilePage.restoreFromArchiveCategory(category.name());
+        profilePage.restoreFromArchiveCategory(categoryName);
         profilePage.clickShowArchivedText();
-        profilePage.checkCategoryVisibility(category.name(), true);
+        profilePage.checkCategoryVisibility(categoryName, true);
     }
 
 }

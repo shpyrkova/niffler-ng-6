@@ -52,9 +52,11 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    public void deleteCategory(CategoryJson category) {
+    @Override
+    public void removeCategory(CategoryJson category) {
         xaTransactionTemplate.execute(() -> {
             spendRepository.removeCategory(CategoryEntity.fromJson(category));
+            return null;
         });
     }
 
@@ -68,7 +70,7 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
-    public void deleteSpend(SpendJson spend) {
+    public void removeSpend(SpendJson spend) {
         xaTransactionTemplate.execute(() -> {
             spendRepository.remove(SpendEntity.fromJson(spend));
         });

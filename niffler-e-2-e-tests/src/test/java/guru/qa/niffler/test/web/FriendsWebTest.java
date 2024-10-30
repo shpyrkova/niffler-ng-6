@@ -1,53 +1,49 @@
 package guru.qa.niffler.test.web;
 
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension;
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType;
-import guru.qa.niffler.jupiter.extension.UsersQueueExtension.StaticUser;
+import guru.qa.niffler.jupiter.annotation.User;
+import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.page.FriendsPage;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.EMPTY;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_FRIEND;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_OUTCOME_REQUEST;
-import static guru.qa.niffler.jupiter.extension.UsersQueueExtension.UserType.Type.WITH_INCOME_REQUEST;
-
-@ExtendWith(UsersQueueExtension.class)
 public class FriendsWebTest extends TestBaseWeb {
 
     FriendsPage friendsPage = new FriendsPage();
 
+    @User
     @Test
-    void friendsTableShouldBeEmptyForNewUser(@UserType(EMPTY) StaticUser user) {
-        loginPage.login(user.username(), user.password());
+    void friendsTableShouldBeEmptyForNewUser(UserJson user) {
+        loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.noFriendsMessageShouldBePresent();
+        friendsPage.checkThatNoFriendsMessageIsPresent();
     }
 
+    @User(friends = 1)
     @Test
-    void friendShouldBePresentInFriendsTable(@UserType(WITH_FRIEND) StaticUser user) {
-        loginPage.login(user.username(), user.password());
+    void friendShouldBePresentInFriendsTable(UserJson user) {
+        loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.friendRowShouldBePresent(user.friend());
+        friendsPage.checkThatFriendRowIsPresent(user.testData().friendsUsernames()[0]);
     }
 
+    @User(incomeInvitations = 1)
     @Test
-    void incomeInvitationBePresentInFriendsTable(@UserType(WITH_INCOME_REQUEST) StaticUser user) {
-        loginPage.login(user.username(), user.password());
+    void incomeInvitationBePresentInFriendsTable(UserJson user) {
+        loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
-        friendsPage.incomeRequestShouldBePresent(user.income());
+        friendsPage.checkThatIncomeRequestIsPresent(user.testData().incomeInvitationsUsernames()[0]);
     }
 
+    @User(outcomeInvitations = 1)
     @Test
-    void outcomeInvitationBePresentInAllPeoplesTable(@UserType(WITH_OUTCOME_REQUEST) StaticUser user) {
-        loginPage.login(user.username(), user.password());
+    void outcomeInvitationBePresentInAllPeoplesTable(UserJson user) {
+        loginPage.login(user.username(), user.testData().password());
         mainPage.clickProfileMenuButton();
         mainPage.clickFriendsLink();
         friendsPage.clickAllPeopleTab();
-        friendsPage.outcomeRequestShouldBePresent(user.outcome());
+        friendsPage.checkThatOutcomeRequestIsPresent(user.testData().outcomeInvitationsUsernames()[0]);
     }
 
 }
