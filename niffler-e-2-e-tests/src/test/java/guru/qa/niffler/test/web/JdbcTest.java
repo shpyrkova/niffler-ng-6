@@ -41,7 +41,7 @@ public class JdbcTest {
 
 //    @Test
 //    void deleteUserHibernateTest() {
-//        usersDbClient.deleteUserHibernate(
+//        usersDbClient.deleteUser(
 //                new UserJson(
 //                        UUID.fromString("b95c5bc2-904f-11ef-b535-0242ac110004"),
 //                        "petr-12"

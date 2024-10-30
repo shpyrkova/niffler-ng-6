@@ -28,7 +28,7 @@ public class LoginWebTest extends TestBaseWeb {
 
         loginPage.login(username, password);
         mainPage.statisticsHeaderShouldBePresent();
-        mainPage.historyOfSpendingsHeaderShouldBePresent();
+        mainPage.getSpendingTable().checkThatHistoryOfSpendingsHeaderIsPresent();
     }
 
     @User

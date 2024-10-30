@@ -7,6 +7,7 @@ import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
@@ -28,6 +29,7 @@ public class UsersApiClient implements UsersClient {
 
     @NotNull
     @Override
+    @Step("Создать пользователя")
     public UserJson createUser(String username, String password) {
         try {
             authApi.requestRegisterForm().execute();
@@ -49,6 +51,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить входящее приглашение")
     public void addIncomeInvitation(UserJson targetUser, int count) {
         if (count > 0) {
             for (int i = 0; i < count; i++) {
@@ -75,6 +78,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить исходящее приглашение")
     public void addOutcomeInvitation(UserJson targetUser, int count) {
         if (count > 0) {
             for (int i = 0; i < count; i++) {
@@ -101,6 +105,7 @@ public class UsersApiClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить друзей")
     public void addFriend(UserJson targetUser, int count) {
         if (count > 0) {
             for (int i = 0; i < count; i++) {

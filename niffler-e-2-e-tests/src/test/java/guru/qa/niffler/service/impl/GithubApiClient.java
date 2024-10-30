@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import guru.qa.niffler.api.GhApi;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.service.GithubClient;
+import io.qameta.allure.Step;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
@@ -27,6 +28,7 @@ public class GithubApiClient extends RestClient implements GithubClient {
 
   @Nonnull
   @Override
+  @Step("Получить статус задачи")
   public String issueState(String issueNumber) {
     final Response<JsonNode> response;
     try {

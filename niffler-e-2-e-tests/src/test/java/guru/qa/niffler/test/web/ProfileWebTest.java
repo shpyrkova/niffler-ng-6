@@ -3,12 +3,11 @@ package guru.qa.niffler.test.web;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.ProfilePage;
 import org.junit.jupiter.api.Test;
 
-public class ProfileWebTest extends TestBaseWeb {
+import static guru.qa.niffler.utils.RandomDataUtils.*;
 
-    ProfilePage profilePage = new ProfilePage();
+public class ProfileWebTest extends TestBaseWeb {
 
     @User(categories = @Category(archived = false))
     @Test
@@ -16,8 +15,7 @@ public class ProfileWebTest extends TestBaseWeb {
         String categoryName = user.testData().categories().getFirst().name();
 
         loginPage.login(user.username(), user.testData().password());
-        mainPage.clickProfileMenuButton();
-        mainPage.clickProfileLink();
+        mainPage.getHeader().toProfilePage();
         profilePage.archiveCategory(categoryName);
         profilePage.categoryDeletedMessageHeaderShouldBePresent(categoryName);
         profilePage.checkCategoryVisibility(categoryName, false);
@@ -31,12 +29,23 @@ public class ProfileWebTest extends TestBaseWeb {
         String categoryName = user.testData().categories().getFirst().name();
 
         loginPage.login(user.username(), user.testData().password());
-        mainPage.clickProfileMenuButton();
-        mainPage.clickProfileLink();
+        mainPage.getHeader().toProfilePage();
         profilePage.clickShowArchivedText();
         profilePage.restoreFromArchiveCategory(categoryName);
         profilePage.clickShowArchivedText();
         profilePage.checkCategoryVisibility(categoryName, true);
+    }
+
+    @User
+    @Test
+    void editProfileTest(UserJson user) {
+        String name = randomName();
+        loginPage.login(user.username(), user.testData().password());
+        mainPage.getHeader().toProfilePage();
+        profilePage.setName(name);
+        profilePage.clickSaveChangesButton();
+        profilePage.checkThatProfileUpdateMessageIsPresent();
+        profilePage.checkThatNameChanged(name);
     }
 
 }

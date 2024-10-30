@@ -8,13 +8,17 @@ import guru.qa.niffler.data.repository.impl.SpendRepositoryHibernate;
 import guru.qa.niffler.data.tpl.XaTransactionTemplate;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import io.qameta.allure.Step;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
+@ParametersAreNonnullByDefault
 public class SpendDbClient implements SpendClient {
 
     private static final Config CFG = Config.getInstance();
@@ -25,27 +29,32 @@ public class SpendDbClient implements SpendClient {
             CFG.spendJdbcUrl()
     );
 
+    @NotNull
     @Override
+    @Step("Создать трату")
     public SpendJson createSpend(SpendJson spend) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
                     spendRepository.create(SpendEntity.fromJson(spend));
                     SpendEntity spendEntity = SpendEntity.fromJson(spend);
                     return SpendJson.fromEntity(spendEntity);
                 }
-        );
-    }
-
-    @Override
-    public CategoryJson createCategory(CategoryJson category) {
-        return xaTransactionTemplate.execute(() -> {
-            CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
-            CategoryEntity createdCategoryEntity = spendRepository.createCategory(categoryEntity);
-            return CategoryJson.fromEntity(createdCategoryEntity);
-        });
+        ));
     }
 
     @NotNull
     @Override
+    @Step("Создать категорию")
+    public CategoryJson createCategory(CategoryJson category) {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
+            CategoryEntity categoryEntity = CategoryEntity.fromJson(category);
+            CategoryEntity createdCategoryEntity = spendRepository.createCategory(categoryEntity);
+            return CategoryJson.fromEntity(createdCategoryEntity);
+        }));
+    }
+
+    @NotNull
+    @Override
+    @Step("Обновить категорию")
     public CategoryJson updateCategory(CategoryJson category) {
         return requireNonNull(
                 xaTransactionTemplate.execute(
@@ -59,6 +68,7 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    @Step("Найти категорию по нику и имени категорию")
     public CategoryJson findCategoryByUsernameAndCategoryName(CategoryJson category) {
         return xaTransactionTemplate.execute(() -> {
             Optional<CategoryEntity> foundCategory = spendRepository
@@ -70,6 +80,7 @@ public class SpendDbClient implements SpendClient {
     }
 
     @Override
+    @Step("Удалить категорию")
     public void removeCategory(CategoryJson category) {
         xaTransactionTemplate.execute(() -> {
             spendRepository.removeCategory(CategoryEntity.fromJson(category));
@@ -77,16 +88,18 @@ public class SpendDbClient implements SpendClient {
         });
     }
 
+    @Nonnull
     public SpendJson findSpendById(UUID id) {
-        return xaTransactionTemplate.execute(() -> {
+        return requireNonNull(xaTransactionTemplate.execute(() -> {
             Optional<SpendEntity> foundSpend = spendRepository
                     .findById(id);
             return SpendJson
                     .fromEntity(foundSpend
                             .orElseThrow(() -> new RuntimeException("Spend not found")));
-        });
+        }));
     }
 
+    @Step("Удалить трату")
     public void removeSpend(SpendJson spend) {
         xaTransactionTemplate.execute(() -> {
             spendRepository.remove(SpendEntity.fromJson(spend));
