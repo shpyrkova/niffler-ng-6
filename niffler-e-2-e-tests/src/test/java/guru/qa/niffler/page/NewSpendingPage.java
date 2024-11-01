@@ -8,6 +8,7 @@ import guru.qa.niffler.page.component.Header;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.util.Date;
 
@@ -15,7 +16,8 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-public class NewSpendingPage {
+@ParametersAreNonnullByDefault
+public class NewSpendingPage extends BasePage<NewSpendingPage> {
 
     private final SelenideElement amountInput = $("#amount");
     private final SelenideElement descriptionInput = $("#description");
@@ -24,7 +26,6 @@ public class NewSpendingPage {
     private final SelenideElement categoryInput = $("#category");
     private final SelenideElement addButton = $("#save");
 
-    protected final Header header = new Header();
     protected  final Calendar calendar = new Calendar();
 
     @Nonnull

@@ -3,11 +3,15 @@ package guru.qa.niffler.page;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
-public class ProfilePage {
+@ParametersAreNonnullByDefault
+public class ProfilePage extends BasePage<ProfilePage> {
+
     private final SelenideElement avatarInput = $("#image__input");
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement nameInput = $("#name");
@@ -75,7 +79,7 @@ public class ProfilePage {
 
     @Step("Проверить, что показано уведомление о сохранении изменений")
     public void checkThatProfileUpdateMessageIsPresent() {
-        $(byText("Profile successfully updated")).shouldBe(visible);
+        checkAlert("Profile successfully updated");
     }
 
 }
