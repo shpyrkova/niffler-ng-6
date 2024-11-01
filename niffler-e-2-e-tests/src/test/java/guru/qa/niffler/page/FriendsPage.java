@@ -2,6 +2,10 @@ package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.component.SearchField;
+import io.qameta.allure.Step;
+
+import javax.annotation.Nonnull;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.text;
@@ -18,39 +22,67 @@ public class FriendsPage {
     private final SelenideElement allPeopleTab = $("[href='/people/all']");
     private final ElementsCollection allPeopleTableRows = $("#all").$$("tr");
     private final SelenideElement nextButton = friendsTab.$("#page-next");
+    private final SelenideElement dialog = $("div[role='dialog']");
 
+    protected final SearchField searchField = new SearchField();
+
+    @Nonnull
+    private SearchField getSearchField() {
+        return searchField;
+    }
+    @Step("Проверить, что присутствует строка друга {username}")
     public void checkThatFriendRowIsPresent(String username) {
-        findFriendByName(username).shouldBe(visible);
+        searchFriendByUsername(username).shouldBe(visible);
     }
 
+    @Step("Проверить, что присутствует строка с входящим приглашением {username}")
     public void checkThatIncomeRequestIsPresent(String username) {
         requestsTableRows.find(text(username)).shouldBe(visible);
     }
 
+    @Step("Проверить, что отсутствует строка с входящим приглашением {username}")
+    public void checkThatIncomeRequestIsAbsent(String username) {
+        requestsTableRows.find(text(username)).shouldNotBe(visible);
+    }
+
+    @Step("Проверить, что присутствует строка с исходящим приглашением {username}")
     public void checkThatOutcomeRequestIsPresent(String username) {
         allPeopleTableRows.find(text(username)).shouldBe(visible).shouldHave(text("Waiting..."));
     }
 
+    @Step("Проверить, что присутствует сообщение There are no users yet")
     public void checkThatNoFriendsMessageIsPresent() {
         noFriendsMessage.shouldBe(visible);
     }
 
+    @Step("Перейти на вкладку All people")
     public void clickAllPeopleTab() {
         allPeopleTab.click();
     }
 
-    public SelenideElement findFriendByName(String username) {
+    @Step("Найти друга {username}")
+    public SelenideElement searchFriendByUsername(String username) {
         friendsTableRows.shouldBe(sizeGreaterThan(0)); // Ждем подгрузки строк таблицы
-        while (!friendsTableRows.findBy(text(username)).isDisplayed()) {
-            if (nextButton.isEnabled()) {
-                nextButton.click(); // Нажимаем кнопку Next, если она доступна
-                friendsTableRows.shouldBe(sizeGreaterThan(0));
-            } else {
-                throw new AssertionError("Friend " + username + " not found"); // Завершаем тест, если друга нет на последней странице
-            }
-        }
+        searchField.search(username);
         return friendsTableRows.findBy(text(username)); // Возвращаем строку с найденным другом
     }
 
+    @Step("Найти входящий запрос от {username}")
+    public SelenideElement searchRequestByUsername(String username) {
+        requestsTableRows.shouldBe(sizeGreaterThan(0)); // Ждем подгрузки строк таблицы
+        searchField.search(username);
+        return requestsTableRows.findBy(text(username)); // Возвращаем строку с найденным другом
+    }
+
+    @Step("Принять входящий запрос от {username}")
+    public void acceptIncomeInvitation(String username) {
+        searchRequestByUsername(username).$(byText("Accept")).click();
+    }
+
+    @Step("Отклонить входящий запрос от {username}")
+    public void declineIncomeInvitation(String username) {
+        searchRequestByUsername(username).$(byText("Decline")).click();
+        dialog.$(byText("Decline")).click();
+    }
 
 }

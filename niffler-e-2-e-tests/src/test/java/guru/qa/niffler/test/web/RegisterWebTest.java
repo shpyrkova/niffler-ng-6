@@ -16,7 +16,7 @@ public class RegisterWebTest extends TestBaseWeb {
         registerPage.clickSignInLink();
         loginPage.login(username, password);
         mainPage.statisticsHeaderShouldBePresent();
-        mainPage.historyOfSpendingsHeaderShouldBePresent();
+        mainPage.getSpendingTable().checkThatHistoryOfSpendingsHeaderIsPresent();
     }
 
     @Test

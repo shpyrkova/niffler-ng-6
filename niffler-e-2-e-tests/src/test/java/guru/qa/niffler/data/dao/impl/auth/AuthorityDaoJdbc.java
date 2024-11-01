@@ -6,6 +6,8 @@ import guru.qa.niffler.data.entity.auth.AuthUserEntity;
 import guru.qa.niffler.data.entity.auth.AuthorityEntity;
 import guru.qa.niffler.data.entity.auth.Authority;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +16,12 @@ import java.util.UUID;
 
 import static guru.qa.niffler.data.tpl.Connections.holder;
 
+@ParametersAreNonnullByDefault
 public class AuthorityDaoJdbc implements AuthorityDao {
 
     private static final Config CFG = Config.getInstance();
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> create(AuthorityEntity... authority) {
         Arrays.stream(authority).forEach(ae -> {
@@ -58,6 +62,7 @@ public class AuthorityDaoJdbc implements AuthorityDao {
         }
     }
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> findAll() {
         try (PreparedStatement ps = holder(CFG.authJdbcUrl()).connection().prepareStatement(

@@ -12,6 +12,7 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
+import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -43,6 +44,7 @@ public class UsersDbClient implements UsersClient {
 
     @Nonnull
     @Override
+    @Step("Создать пользователя")
     public UserJson createUser(String username, String password) {
         return requireNonNull(
                 xaTransactionTemplate.execute(
@@ -66,6 +68,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить входящее приглашение")
     public void addIncomeInvitation(UserJson addressee, int count) {
         if (count > 0) {
             UserEntity addresseeEntity = userdataUserRepositoryHibernate.findById(
@@ -87,6 +90,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить исходящее приглашение")
     public void addOutcomeInvitation(UserJson requester, int count) {
         if (count > 0) {
             UserEntity requesterEntity = userdataUserRepositoryHibernate.findById(
@@ -108,6 +112,7 @@ public class UsersDbClient implements UsersClient {
     }
 
     @Override
+    @Step("Добавить друзей")
     public void addFriend(UserJson addressee, int count) {
         if (count > 0) {
             UserEntity addresseeEntity = userdataUserRepositoryHibernate.findById(
@@ -127,19 +132,23 @@ public class UsersDbClient implements UsersClient {
         }
     }
 
+    @Step("Найти пользователя по id")
     public UserJson findUserById(UUID id) {
         return UserJson
                 .fromEntity(userdataUserRepositoryHibernate.findById(id)
                         .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
+    @Step("Найти пользователя по username")
     public UserJson findUserByUsername(String username) {
         return UserJson
                 .fromEntity(userdataUserRepositoryHibernate.findByUsername(username)
                         .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
-    public void deleteUserHibernate(UserJson user) {
+
+    @Step("Удалить пользователя")
+    public void deleteUser(UserJson user) {
         xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = new AuthUserEntity();
             authUser.setId(UUID.fromString("b95b0d4e-904f-11ef-97a8-0242ac110004")); // пока никуда не выносили

@@ -7,16 +7,20 @@ import guru.qa.niffler.data.mapper.AuthorityEntityRowMapper;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
 import static guru.qa.niffler.data.tpl.DataSources.dataSource;
 
+@ParametersAreNonnullByDefault
 public class AuthorityDaoSpringJdbc implements AuthorityDao {
 
     private static final Config CFG = Config.getInstance();
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> create(AuthorityEntity... authority) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource(CFG.authJdbcUrl()));
@@ -38,6 +42,7 @@ public class AuthorityDaoSpringJdbc implements AuthorityDao {
         return List.of(authority);
     }
 
+    @Nonnull
     @Override
     public List<AuthorityEntity> findAll() {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource(CFG.authJdbcUrl()));
