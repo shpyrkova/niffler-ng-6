@@ -4,10 +4,12 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.codeborne.selenide.Selenide.$;
 
-public class EditSpendingPage {
+@ParametersAreNonnullByDefault
+public class EditSpendingPage extends BasePage<EditSpendingPage> {
 
     private final SelenideElement descriptionInput = $("#description");
     private final SelenideElement saveBtn = $("#save");

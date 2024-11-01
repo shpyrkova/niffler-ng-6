@@ -3,6 +3,7 @@ package guru.qa.niffler.data.tpl;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -16,6 +17,7 @@ public class DataSources {
 
     private static final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
 
+    @Nonnull
     public static DataSource dataSource(String jdbcUrl) {
         return dataSources.computeIfAbsent(
                 jdbcUrl,
