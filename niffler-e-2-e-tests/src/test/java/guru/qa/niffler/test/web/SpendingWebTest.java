@@ -27,6 +27,7 @@ public class SpendingWebTest extends TestBaseWeb {
                 .getSpendingTable().toEditSpendingPage(actualDescription)
                 .setNewSpendingDescription(newDescription)
                 .save();
+        mainPage.checkThatSpendingUpdateMessageIsPresent();
         mainPage.getSpendingTable().checkTableContains(newDescription);
     }
 

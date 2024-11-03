@@ -1,4 +1,4 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.data.entity.auth.AuthUserEntity;
@@ -12,17 +12,20 @@ import guru.qa.niffler.data.entity.auth.Authority;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.UsersClient;
 import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
 import static java.util.Objects.requireNonNull;
 
+@ParametersAreNonnullByDefault
 public class UsersDbClient implements UsersClient {
 
     private static final Config CFG = Config.getInstance();
@@ -132,6 +135,7 @@ public class UsersDbClient implements UsersClient {
         }
     }
 
+    @Nonnull
     @Step("Найти пользователя по id")
     public UserJson findUserById(UUID id) {
         return UserJson
@@ -139,6 +143,7 @@ public class UsersDbClient implements UsersClient {
                         .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
+    @Nonnull
     @Step("Найти пользователя по username")
     public UserJson findUserByUsername(String username) {
         return UserJson

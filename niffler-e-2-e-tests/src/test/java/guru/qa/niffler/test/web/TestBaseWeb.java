@@ -11,6 +11,8 @@ public class TestBaseWeb {
     protected final LoginPage loginPage = new LoginPage();
     protected final MainPage mainPage = new MainPage();
     protected final NewSpendingPage newSpendingPage = new NewSpendingPage();
-    ProfilePage profilePage = new ProfilePage();
+    protected final ProfilePage profilePage = new ProfilePage();
+    protected final FriendsPage friendsPage = new FriendsPage();
+    protected final PeoplePage peoplePage = new PeoplePage();
 
 }

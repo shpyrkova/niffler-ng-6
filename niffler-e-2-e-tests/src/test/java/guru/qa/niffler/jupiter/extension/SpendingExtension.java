@@ -7,7 +7,7 @@ import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import guru.qa.niffler.service.SpendClient;
-import guru.qa.niffler.service.SpendDbClient;
+import guru.qa.niffler.service.impl.SpendDbClient;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -74,7 +74,6 @@ public class SpendingExtension implements BeforeEachCallback, ParameterResolver 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public SpendJson[] resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         return (SpendJson[]) extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), List.class).toArray();
     }

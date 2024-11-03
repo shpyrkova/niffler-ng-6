@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.List;
 
 public enum ThreadSafeCookieStore implements CookieStore {
+
     INSTANCE;
 
     private final ThreadLocal<CookieStore> threadSafeCookieStore = ThreadLocal.withInitial(
@@ -58,4 +59,5 @@ public enum ThreadSafeCookieStore implements CookieStore {
                 .findFirst()
                 .orElseThrow();
     }
+
 }

@@ -2,12 +2,9 @@ package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
-import guru.qa.niffler.page.FriendsPage;
 import org.junit.jupiter.api.Test;
 
 public class FriendsWebTest extends TestBaseWeb {
-
-    FriendsPage friendsPage = new FriendsPage();
 
     @User
     @Test
@@ -37,9 +34,8 @@ public class FriendsWebTest extends TestBaseWeb {
     @Test
     void outcomeInvitationBePresentInAllPeoplesTableTest(UserJson user) {
         loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toFriendsPage();
-        friendsPage.clickAllPeopleTab();
-        friendsPage.checkThatOutcomeRequestIsPresent(user.testData().outcomeInvitationsUsernames()[0]);
+        mainPage.getHeader().toAllPeoplesPage();
+        peoplePage.checkThatOutcomeRequestIsPresent(user.testData().outcomeInvitationsUsernames()[0]);
     }
 
     @User(incomeInvitations = 1)

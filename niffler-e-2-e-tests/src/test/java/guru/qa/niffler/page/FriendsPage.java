@@ -6,6 +6,7 @@ import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.text;
@@ -13,14 +14,14 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 
-public class FriendsPage {
+@ParametersAreNonnullByDefault
+public class FriendsPage extends BasePage<FriendsPage> {
 
     private final SelenideElement friendsTab = $("#simple-tabpanel-friends");
     private final SelenideElement noFriendsMessage = friendsTab.$(byText("There are no users yet"));
     private final ElementsCollection friendsTableRows = $("#friends").$$("tr");
     private final ElementsCollection requestsTableRows = $("#requests").$$("tr");
     private final SelenideElement allPeopleTab = $("[href='/people/all']");
-    private final ElementsCollection allPeopleTableRows = $("#all").$$("tr");
     private final SelenideElement nextButton = friendsTab.$("#page-next");
     private final SelenideElement dialog = $("div[role='dialog']");
 
@@ -43,11 +44,6 @@ public class FriendsPage {
     @Step("Проверить, что отсутствует строка с входящим приглашением {username}")
     public void checkThatIncomeRequestIsAbsent(String username) {
         requestsTableRows.find(text(username)).shouldNotBe(visible);
-    }
-
-    @Step("Проверить, что присутствует строка с исходящим приглашением {username}")
-    public void checkThatOutcomeRequestIsPresent(String username) {
-        allPeopleTableRows.find(text(username)).shouldBe(visible).shouldHave(text("Waiting..."));
     }
 
     @Step("Проверить, что присутствует сообщение There are no users yet")

@@ -1,10 +1,11 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
 import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.CategoryJson;
 import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 import retrofit2.Response;
 
@@ -12,8 +13,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,5 +1,6 @@
-package guru.qa.niffler.service;
+package guru.qa.niffler.service.impl;
 
+import com.google.common.base.Stopwatch;
 import guru.qa.niffler.api.AuthApi;
 import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.api.core.RestClient.EmptyClient;
@@ -7,15 +8,16 @@ import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.model.TestData;
 import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.service.UsersClient;
 import io.qameta.allure.Step;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
-import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
@@ -27,7 +29,7 @@ public class UsersApiClient implements UsersClient {
     private final AuthApi authApi = new EmptyClient(CFG.authUrl()).create(AuthApi.class);
     private final UserdataApi userdataApi = new EmptyClient(CFG.userdataUrl()).create(UserdataApi.class);
 
-    @NotNull
+    @Nonnull
     @Override
     @Step("Создать пользователя")
     public UserJson createUser(String username, String password) {
@@ -39,15 +41,24 @@ public class UsersApiClient implements UsersClient {
                     password,
                     ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
             ).execute();
-            UserJson createdUser = requireNonNull(userdataApi.currentUser(username).execute().body());
-            return createdUser.addTestData(
-                    new TestData(
-                            password
-                    )
-            );
-        } catch (IOException e) {
+
+            Stopwatch sw = Stopwatch.createStarted();
+            long maxWaitTime = 5000L; // время ожидания - 5 секунд
+            while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
+                UserJson userJson = userdataApi.currentUser(username).execute().body();
+                if (userJson != null && userJson.id() != null) {
+                    return userJson.addTestData(
+                            new TestData(
+                                    password
+                            ));
+                } else {
+                    Thread.sleep(100);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+        throw new IllegalStateException("Пользователь не найден в userdata по истечении времени ожидания");
     }
 
     @Override
