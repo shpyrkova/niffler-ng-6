@@ -43,7 +43,7 @@ public class UsersApiClient implements UsersClient {
             ).execute();
 
             Stopwatch sw = Stopwatch.createStarted();
-            long maxWaitTime = 5000L;
+            long maxWaitTime = 5000L; // время ожидания - 5 секунд
             while (sw.elapsed(TimeUnit.MILLISECONDS) < maxWaitTime) {
                 UserJson userJson = userdataApi.currentUser(username).execute().body();
                 if (userJson != null && userJson.id() != null) {
@@ -58,7 +58,7 @@ public class UsersApiClient implements UsersClient {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        throw new IllegalStateException("Пользователь не найден в userdata по истечении 5 секунд");
+        throw new IllegalStateException("Пользователь не найден в userdata по истечении времени ожидания");
     }
 
     @Override
