@@ -1,9 +1,13 @@
 package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.jupiter.annotation.Category;
+import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.UserJson;
 import org.junit.jupiter.api.Test;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
@@ -46,6 +50,17 @@ public class ProfileWebTest extends TestBaseWeb {
         profilePage.clickSaveChangesButton();
         profilePage.checkThatProfileUpdateMessageIsPresent();
         profilePage.checkThatNameChanged(name);
+    }
+
+    @ScreenShotTest(value = "img/expected-avatar-test.png", rewriteExpected = true)
+    @User
+    void addAvatarTest(UserJson user, BufferedImage expected) throws IOException {
+        loginPage.login(user.username(), user.testData().password());
+        mainPage.getHeader().toProfilePage();
+        profilePage.uploadAvatar("img/renoire.jpeg");
+        profilePage.clickSaveChangesButton();
+        profilePage.checkThatProfileUpdateMessageIsPresent();
+        profilePage.checkThatAvatarAsExpected(expected);
     }
 
 }

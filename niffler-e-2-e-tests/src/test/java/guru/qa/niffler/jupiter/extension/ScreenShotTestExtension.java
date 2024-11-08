@@ -16,6 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -35,22 +36,36 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
     @SneakyThrows
     @Override
     public BufferedImage resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return ImageIO.read(new ClassPathResource("img/expected-stat.png").getInputStream());
+        String screenshotPath = extensionContext.getRequiredTestMethod().getAnnotation(ScreenShotTest.class).value();
+        return ImageIO.read(new ClassPathResource(screenshotPath).getInputStream());
     }
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        ScreenDif screenDif = new ScreenDif(
-                "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
-                "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
-                "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
-        );
+        // Проверяем, что существует разница между картинками и тест падает из-за этого.
+        // Иначе тесты падают всегда на этом методе, даже если сравнение по скринам прошло, а причина падения в другом.
+        if (getDiff() != null) {
+            ScreenShotTest annotation = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
+            if (annotation.rewriteExpected()) {
+                String expectedPath = annotation.value();
+                saveNewExpected(getActual(), expectedPath);
+            }
+            try {
+                ScreenDif screenDif = new ScreenDif(
+                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
+                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
+                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
+                );
 
-        Allure.addAttachment(
-                "Screenshot diff",
-                "application/vnd.allure.image.diff",
-                objectMapper.writeValueAsString(screenDif)
-        );
+                Allure.addAttachment(
+                        "Screenshot diff",
+                        "application/vnd.allure.image.diff",
+                        objectMapper.writeValueAsString(screenDif)
+                );
+            } catch (Exception e) {
+                System.err.println("Ошибка при прикреплении Screenshot diff: " + e.getMessage());
+            }
+        }
         throw throwable;
     }
 
@@ -86,4 +101,9 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
             throw new RuntimeException(e);
         }
     }
+
+    private static void saveNewExpected(BufferedImage image, String filePath) throws IOException {
+        ImageIO.write(image, "png", new File("src/test/resources/" + filePath));
+    }
+
 }
