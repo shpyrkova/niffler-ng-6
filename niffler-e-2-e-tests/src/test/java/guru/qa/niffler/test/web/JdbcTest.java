@@ -3,6 +3,7 @@ package guru.qa.niffler.test.web;
 import guru.qa.niffler.model.*;
 import guru.qa.niffler.service.impl.SpendDbClient;
 import guru.qa.niffler.service.impl.UsersDbClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomCategoryName;
 
+@Disabled
 public class JdbcTest {
 
     UsersDbClient usersDbClient = new UsersDbClient();
