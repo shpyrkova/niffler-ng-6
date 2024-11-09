@@ -6,7 +6,12 @@ import javax.annotation.Nonnull;
 
 @RequiredArgsConstructor
 public enum CurrencyValues {
-  RUB("₽"), USD("$"), EUR("€"), KZT("₸");
+
+  RUB("₽"),
+  USD("$"),
+  EUR("€"),
+  KZT("₸");
+
   public final String symbol;
 
   public static @Nonnull CurrencyValues fromSymbol(@Nonnull String symbol) {

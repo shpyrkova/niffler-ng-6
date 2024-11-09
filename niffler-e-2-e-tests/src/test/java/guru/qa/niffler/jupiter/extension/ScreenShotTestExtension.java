@@ -42,20 +42,20 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
 
     @Override
     public void handleTestExecutionException(ExtensionContext context, Throwable throwable) throws Throwable {
-        // Проверяем, что существует разница между картинками и тест падает из-за этого.
+        // Если разницы между скринами нет, то причина падения теста не в картинке, кидаем исключение c причиной падения.
         // Иначе тесты падают всегда на этом методе, даже если сравнение по скринам прошло, а причина падения в другом.
-        if (getDiff() != null) {
-            ScreenShotTest annotation = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
-            if (annotation.rewriteExpected()) {
-                String expectedPath = annotation.value();
-                saveNewExpected(getActual(), expectedPath);
-            }
-            try {
-                ScreenDif screenDif = new ScreenDif(
-                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
-                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
-                        "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
-                );
+        if (getDiff() == null) throw throwable;
+        ScreenShotTest annotation = context.getRequiredTestMethod().getAnnotation(ScreenShotTest.class);
+        if (annotation.rewriteExpected()) {
+            String expectedPath = annotation.value();
+            saveNewExpected(getActual(), expectedPath);
+        }
+        try {
+            ScreenDif screenDif = new ScreenDif(
+                    "data:image/png;base64," + encoder.encodeToString(imageToBytes(getExpected())),
+                    "data:image/png;base64," + encoder.encodeToString(imageToBytes(getActual())),
+                    "data:image/png;base64," + encoder.encodeToString(imageToBytes(getDiff()))
+            );
 
                 Allure.addAttachment(
                         "Screenshot diff",
@@ -65,7 +65,6 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
             } catch (Exception e) {
                 System.err.println("Ошибка при прикреплении Screenshot diff: " + e.getMessage());
             }
-        }
         throw throwable;
     }
 
