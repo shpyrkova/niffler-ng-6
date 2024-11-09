@@ -1,18 +1,27 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.page.component.Header;
+import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.imageio.ImageIO;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ParametersAreNonnullByDefault
 public class ProfilePage extends BasePage<ProfilePage> {
 
     private final SelenideElement avatarInput = $("#image__input");
+    private final SelenideElement avatarImg = $(".MuiAvatar-img");
     private final SelenideElement usernameInput = $("#username");
     private final SelenideElement nameInput = $("#name");
     private final SelenideElement saveChangesButton = $(byText("Save changes"));
@@ -24,6 +33,11 @@ public class ProfilePage extends BasePage<ProfilePage> {
 
     private SelenideElement categoryDeletedMessage(String name) {
         return $(byText("Category " + name + " is archived"));
+    }
+
+    @Nonnull
+    public Header getHeader() {
+        return header;
     }
 
     @Step("Показать архивные категории")
@@ -80,6 +94,17 @@ public class ProfilePage extends BasePage<ProfilePage> {
     @Step("Проверить, что показано уведомление о сохранении изменений")
     public void checkThatProfileUpdateMessageIsPresent() {
         checkAlert("Profile successfully updated");
+    }
+
+    @Step("Загрузить аватар")
+    public void uploadAvatar(String path) {
+        avatarInput.uploadFromClasspath(path);
+    }
+
+    @Step("Проверить, что аватар соответствует ожидаемому")
+    public void checkThatAvatarAsExpected(BufferedImage expected) throws IOException {
+        BufferedImage actual = ImageIO.read(avatarImg.screenshot());
+        assertThat(new ScreenDiffResult(actual, expected).getAsBoolean()).isFalse();
     }
 
 }
