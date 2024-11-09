@@ -31,14 +31,8 @@ public class UsersDbClient implements UsersClient {
     private static final Config CFG = Config.getInstance();
     private static final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    private final AuthUserRepository authUserRepositoryHibernate = new AuthUserRepositoryHibernate();
-    private final UserdataUserRepository userdataUserRepositoryHibernate = new UserdataUserRepositoryHibernate();
-
-    private final AuthUserRepository authUserRepositoryJdbc = new AuthUserRepositoryJdbc();
-    private final UserdataUserRepository userdataUserRepositoryJdbc = new UserdataUserRepositoryJdbc();
-
-    private final AuthUserRepository authUserRepositorySpringJdbc = new AuthUserRepositorySpringJdbc();
-    private final UserdataUserRepository userdataUserRepositorySpringJdbc = new UserdataUserRepositorySpringJdbc();
+    private final AuthUserRepository authUserRepository = new AuthUserRepositoryHibernate();
+    private final UserdataUserRepository userdataUserRepository = new UserdataUserRepositoryHibernate();
 
     private final XaTransactionTemplate xaTransactionTemplate = new XaTransactionTemplate(
             CFG.authJdbcUrl(),
@@ -47,7 +41,7 @@ public class UsersDbClient implements UsersClient {
 
     @Nonnull
     @Override
-    @Step("Создать пользователя")
+    @Step("Создать пользователя через БД")
     public UserJson createUser(String username, String password) {
         return requireNonNull(
                 xaTransactionTemplate.execute(
@@ -66,15 +60,15 @@ public class UsersDbClient implements UsersClient {
     @Nonnull
     private UserEntity createNewUser(String username, String password) {
         AuthUserEntity authUser = authUserEntity(username, password);
-        authUserRepositoryHibernate.create(authUser);
-        return userdataUserRepositoryHibernate.create(userEntity(username));
+        authUserRepository.create(authUser);
+        return userdataUserRepository.create(userEntity(username));
     }
 
     @Override
     @Step("Добавить входящее приглашение")
     public void addIncomeInvitation(UserJson addressee, int count) {
         if (count > 0) {
-            UserEntity addresseeEntity = userdataUserRepositoryHibernate.findById(
+            UserEntity addresseeEntity = userdataUserRepository.findById(
                     addressee.id()
             ).orElseThrow();
 
@@ -82,9 +76,9 @@ public class UsersDbClient implements UsersClient {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
                             AuthUserEntity authUser = authUserEntity(username, "00000000");
-                            authUserRepositoryHibernate.create(authUser);
-                            UserEntity requester = userdataUserRepositoryHibernate.create(userEntity(username));
-                            userdataUserRepositoryHibernate.addInvitation(requester, addresseeEntity);
+                            authUserRepository.create(authUser);
+                            UserEntity requester = userdataUserRepository.create(userEntity(username));
+                            userdataUserRepository.addInvitation(requester, addresseeEntity);
                             return null;
                         }
                 );
@@ -96,7 +90,7 @@ public class UsersDbClient implements UsersClient {
     @Step("Добавить исходящее приглашение")
     public void addOutcomeInvitation(UserJson requester, int count) {
         if (count > 0) {
-            UserEntity requesterEntity = userdataUserRepositoryHibernate.findById(
+            UserEntity requesterEntity = userdataUserRepository.findById(
                     requester.id()
             ).orElseThrow();
 
@@ -104,9 +98,9 @@ public class UsersDbClient implements UsersClient {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
                             AuthUserEntity authUser = authUserEntity(username, "00000000");
-                            authUserRepositoryHibernate.create(authUser);
-                            UserEntity addressee = userdataUserRepositoryHibernate.create(userEntity(username));
-                            userdataUserRepositoryHibernate.addInvitation(requesterEntity, addressee);
+                            authUserRepository.create(authUser);
+                            UserEntity addressee = userdataUserRepository.create(userEntity(username));
+                            userdataUserRepository.addInvitation(requesterEntity, addressee);
                             return null;
                         }
                 );
@@ -118,16 +112,16 @@ public class UsersDbClient implements UsersClient {
     @Step("Добавить друзей")
     public void addFriend(UserJson addressee, int count) {
         if (count > 0) {
-            UserEntity addresseeEntity = userdataUserRepositoryHibernate.findById(
+            UserEntity addresseeEntity = userdataUserRepository.findById(
                     addressee.id()
             ).orElseThrow();
             for (int i = 0; i < count; i++) {
                 xaTransactionTemplate.execute(() -> {
                             String username = randomUsername();
                             AuthUserEntity authUser = authUserEntity(username, "00000000");
-                            authUserRepositoryHibernate.create(authUser);
-                            UserEntity requester = userdataUserRepositoryHibernate.create(userEntity(username));
-                            userdataUserRepositoryHibernate.addFriend(addresseeEntity, requester);
+                            authUserRepository.create(authUser);
+                            UserEntity requester = userdataUserRepository.create(userEntity(username));
+                            userdataUserRepository.addFriend(addresseeEntity, requester);
                             return null;
                         }
                 );
@@ -139,7 +133,7 @@ public class UsersDbClient implements UsersClient {
     @Step("Найти пользователя по id")
     public UserJson findUserById(UUID id) {
         return UserJson
-                .fromEntity(userdataUserRepositoryHibernate.findById(id)
+                .fromEntity(userdataUserRepository.findById(id)
                         .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
@@ -147,7 +141,7 @@ public class UsersDbClient implements UsersClient {
     @Step("Найти пользователя по username")
     public UserJson findUserByUsername(String username) {
         return UserJson
-                .fromEntity(userdataUserRepositoryHibernate.findByUsername(username)
+                .fromEntity(userdataUserRepository.findByUsername(username)
                         .orElseThrow(() -> new RuntimeException("User not found")), null);
     }
 
@@ -157,8 +151,8 @@ public class UsersDbClient implements UsersClient {
         xaTransactionTemplate.execute(() -> {
             AuthUserEntity authUser = new AuthUserEntity();
             authUser.setId(UUID.fromString("b95b0d4e-904f-11ef-97a8-0242ac110004")); // пока никуда не выносили
-            authUserRepositoryHibernate.remove(authUser);
-            userdataUserRepositoryHibernate.remove(UserEntity.fromJson(user));
+            authUserRepository.remove(authUser);
+            userdataUserRepository.remove(UserEntity.fromJson(user));
         });
     }
 

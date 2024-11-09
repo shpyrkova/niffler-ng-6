@@ -10,7 +10,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.*;
 import java.util.*;
 
-import static guru.qa.niffler.data.tpl.Connections.holder;
+import static guru.qa.niffler.data.jdbc.Connections.holder;
 
 @ParametersAreNonnullByDefault
 public class UserDaoJdbc implements UserDao {
