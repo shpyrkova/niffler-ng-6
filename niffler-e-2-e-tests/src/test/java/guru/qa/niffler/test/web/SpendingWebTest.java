@@ -1,5 +1,6 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.Spending;
@@ -57,10 +58,11 @@ public class SpendingWebTest extends TestBaseWeb {
                 .save();
         mainPage.checkThatSpendingUpdateMessageIsPresent();
         mainPage.getSpendingTable().checkTableContains(newAmountStr);
-        mainPage.checkThatStatPieChartAsExpected(expected);
+        mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
         String category = user.testData().spendings().getFirst().category().name();
         CurrencyValues currency = user.testData().spendings().getFirst().currency();
-        mainPage.checkSpendsLegendLabel(category, newAmount, currency);
+        mainPage.getStatComponent().checkSpendsLegendLabel(category, newAmount, currency);
+        mainPage.getStatComponent().checkBubbles(Color.yellow);
     }
 
     @ScreenShotTest("img/expected-archive-stat-test.png")
@@ -76,10 +78,10 @@ public class SpendingWebTest extends TestBaseWeb {
         mainPage.getHeader().toProfilePage();
         profilePage.archiveCategory(user.testData().spendings().getFirst().category().name());
         profilePage.getHeader().toMainPage();
-        mainPage.checkThatStatPieChartAsExpected(expected);
+        mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
         Double amount = user.testData().spendings().getFirst().amount();
         CurrencyValues currency = user.testData().spendings().getFirst().currency();
-        mainPage.checkArchivedSpendsLegendLabel(amount, currency);
+        mainPage.getStatComponent().checkArchivedSpendsLegendLabel(amount, currency);
     }
 
     @ScreenShotTest("img/expected-delete-spend-test.png")
@@ -93,7 +95,7 @@ public class SpendingWebTest extends TestBaseWeb {
     void deleteSpendingTest(UserJson user, BufferedImage expected) throws IOException {
         loginPage.login(user.username(), user.testData().password());
         mainPage.getSpendingTable().deleteSpending(user.testData().spendings().getFirst().description());
-        mainPage.checkThatStatPieChartAsExpected(expected);
+        mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
     }
 
 }
