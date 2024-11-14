@@ -2,7 +2,7 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.condition.Bubble;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.utils.ScreenDiffResult;
 import io.qameta.allure.Step;
@@ -16,7 +16,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.sleep;
-import static guru.qa.niffler.condition.StatConditions.color;
+import static guru.qa.niffler.condition.StatConditions.*;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,10 +56,17 @@ public class StatComponent extends BaseComponent<StatComponent> {
         legendLabels.findBy(text("Archived" + " " + amountString + " " + currency)).shouldBe(visible);
     }
 
-    @Step("Проверить, что баблы с тратами имеют цвет {expectedColors}")
+    @Step("Проверить содержание баблов с тратами")
     @Nonnull
-    public StatComponent checkBubbles(Color... expectedColors) {
-        bubbles.should(color(expectedColors));
+    public StatComponent checkBubbles(Bubble... expectedBubbles) {
+        bubbles.should(colorAndTextAnyOrder(expectedBubbles));
+        return this;
+    }
+
+    @Step("Проверить, что баблы с тратами содержат ожидаемый бабл")
+    @Nonnull
+    public StatComponent checkBubblesContains(Bubble... expectedBubbles) {
+        bubbles.should(statBubblesContains(expectedBubbles));
         return this;
     }
 

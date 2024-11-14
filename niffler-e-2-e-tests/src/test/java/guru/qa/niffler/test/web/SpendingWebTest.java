@@ -1,10 +1,12 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.condition.Bubble;
 import guru.qa.niffler.condition.Color;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.Spending;
 import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.model.UserJson;
 import org.junit.jupiter.api.Test;
 
@@ -36,12 +38,16 @@ public class SpendingWebTest extends TestBaseWeb {
         mainPage.getSpendingTable().checkTableContains(description);
     }
 
-    @ScreenShotTest("img/expected-edit-spend-test.png")
+    @ScreenShotTest(value = "img/expected-edit-spend-test.png")
     @User(
-            spendings = @Spending(
+            spendings = {@Spending(
                     category = "edit spending test",
                     description = "Продукты",
-                    amount = 11500)
+                    amount = 11500),
+                    @Spending(
+                            category = "second",
+                            description = "Cinema",
+                            amount = 11500)}
     )
     @Test
     void editSpendingTest(UserJson user, BufferedImage expected) throws IOException {
@@ -62,7 +68,11 @@ public class SpendingWebTest extends TestBaseWeb {
         String category = user.testData().spendings().getFirst().category().name();
         CurrencyValues currency = user.testData().spendings().getFirst().currency();
         mainPage.getStatComponent().checkSpendsLegendLabel(category, newAmount, currency);
-        mainPage.getStatComponent().checkBubbles(Color.yellow);
+        String expectedText = category + " " + newAmountStr + " " + CurrencyValues.RUB.symbol;
+        String category2 = user.testData().spendings().get(1).category().name();
+        String expectedText2 = category2 + " " + "11500" + " " + CurrencyValues.RUB.symbol;
+        mainPage.getStatComponent().checkBubbles(new Bubble(Color.yellow, expectedText), new Bubble(Color.green, expectedText2));
+        mainPage.getStatComponent().checkBubblesContains(new Bubble(Color.green, expectedText2));
     }
 
     @ScreenShotTest("img/expected-archive-stat-test.png")
@@ -97,6 +107,26 @@ public class SpendingWebTest extends TestBaseWeb {
         mainPage.getSpendingTable().deleteSpending(user.testData().spendings().getFirst().description());
         mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
     }
+
+    @Test
+    @User(
+            spendings = {@Spending(
+                    category = "first",
+                    description = "Hobby",
+                    amount = 20500),
+                    @Spending(
+                            category = "second",
+                            description = "Products",
+                            amount = 11500)
+            }
+    )
+    void fullSpendingsTableTest(UserJson user) {
+        loginPage.login(user.username(), user.testData().password());
+        SpendJson expectedSpend = user.testData().spendings().get(0);
+        SpendJson expectedSpend2 = user.testData().spendings().get(1);
+        mainPage.getSpendingTable().checkTable(expectedSpend, expectedSpend2);
+    }
+
 
 }
 
