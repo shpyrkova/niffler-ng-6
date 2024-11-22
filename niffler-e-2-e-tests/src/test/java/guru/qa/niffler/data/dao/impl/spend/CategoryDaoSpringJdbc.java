@@ -13,7 +13,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.sql.*;
 import java.util.*;
 
-import static guru.qa.niffler.data.tpl.DataSources.dataSource;
+import static guru.qa.niffler.data.jdbc.DataSources.dataSource;
 
 @ParametersAreNonnullByDefault
 public class CategoryDaoSpringJdbc implements CategoryDao {

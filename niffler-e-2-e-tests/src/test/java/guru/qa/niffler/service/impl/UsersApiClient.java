@@ -31,7 +31,7 @@ public class UsersApiClient implements UsersClient {
 
     @Nonnull
     @Override
-    @Step("Создать пользователя")
+    @Step("Создать пользователя через API")
     public UserJson createUser(String username, String password) {
         try {
             authApi.requestRegisterForm().execute();

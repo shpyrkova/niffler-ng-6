@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.qa.niffler.data.tpl.DataSources.dataSource;
+import static guru.qa.niffler.data.jdbc.DataSources.dataSource;
 
 @ParametersAreNonnullByDefault
 public class AuthUserDaoSpringJdbc implements AuthUserDao {

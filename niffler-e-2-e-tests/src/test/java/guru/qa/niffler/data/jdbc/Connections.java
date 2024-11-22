@@ -1,4 +1,4 @@
-package guru.qa.niffler.data.tpl;
+package guru.qa.niffler.data.jdbc;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

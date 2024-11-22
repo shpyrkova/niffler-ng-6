@@ -15,7 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
 
-import static guru.qa.niffler.data.tpl.DataSources.dataSource;
+import static guru.qa.niffler.data.jdbc.DataSources.dataSource;
 
 @ParametersAreNonnullByDefault
 public class UserdataUserRepositorySpringJdbc implements UserdataUserRepository {
