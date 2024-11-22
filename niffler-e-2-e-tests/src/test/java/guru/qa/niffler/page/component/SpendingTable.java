@@ -2,7 +2,9 @@ package guru.qa.niffler.page.component;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import guru.qa.niffler.condition.SpendsConditions;
 import guru.qa.niffler.model.DataFilterValues;
+import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.page.EditSpendingPage;
 import io.qameta.allure.Step;
 
@@ -74,6 +76,11 @@ public class SpendingTable extends BaseComponent<SpendingTable> {
             SelenideElement spend = spendingTableRows.findBy(text(description));
             spend.shouldBe(visible);
         }
+    }
+
+    @Step("Проверить, что таблица содержит все {expectedSpends}")
+    public void checkTable(SpendJson... expectedSpends) {
+        spendingTableRows.should(SpendsConditions.spends(expectedSpends));
     }
 
     @Step("Проверить, что в таблице {expectedSize} строк")
