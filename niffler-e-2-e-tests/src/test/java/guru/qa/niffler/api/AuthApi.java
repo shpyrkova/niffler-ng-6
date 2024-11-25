@@ -2,6 +2,7 @@ package guru.qa.niffler.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -11,7 +12,7 @@ import retrofit2.http.Query;
 public interface AuthApi {
 
     @GET("oauth2/authorize")
-    Call<Void> authorize(
+    Call<Response<Void>> authorize(
             @Query("response_type") String responseType,
             @Query("client_id") String clientId,
             @Query("scope") String scope,
