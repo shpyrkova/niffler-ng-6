@@ -3,7 +3,7 @@ package guru.qa.niffler.test.web;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.UserJson;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;

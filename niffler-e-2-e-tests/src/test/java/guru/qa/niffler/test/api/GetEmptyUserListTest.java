@@ -4,7 +4,7 @@ import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.UserJson;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 

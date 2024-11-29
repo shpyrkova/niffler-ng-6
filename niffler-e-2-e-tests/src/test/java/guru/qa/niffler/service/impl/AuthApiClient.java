@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-import static guru.qa.niffler.utils.OauthUtils.generateCodeChallenge;
-import static guru.qa.niffler.utils.OauthUtils.generateCodeVerifier;
+import static guru.qa.niffler.utils.OAuthUtils.generateCodeChallenge;
+import static guru.qa.niffler.utils.OAuthUtils.generateCodeVerifier;
 
 public class AuthApiClient {
 
