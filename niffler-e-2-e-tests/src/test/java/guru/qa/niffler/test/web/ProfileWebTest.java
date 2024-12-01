@@ -1,5 +1,6 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Category;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
@@ -9,16 +10,17 @@ import org.junit.jupiter.api.Test;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import static com.codeborne.selenide.Selenide.open;
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
 public class ProfileWebTest extends TestBaseWeb {
 
     @User(categories = @Category(archived = false))
+    @ApiLogin
     @Test
     void archiveCategoryTest(UserJson user) {
         String categoryName = user.testData().categories().getFirst().name();
-
-        loginPage.login(user.username(), user.testData().password());
+        open(mainPage.URL);
         mainPage.getHeader().toProfilePage();
         profilePage.archiveCategory(categoryName);
         profilePage.categoryDeletedMessageHeaderShouldBePresent(categoryName);
