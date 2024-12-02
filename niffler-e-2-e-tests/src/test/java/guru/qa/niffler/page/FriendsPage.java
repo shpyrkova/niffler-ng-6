@@ -17,6 +17,8 @@ import static com.codeborne.selenide.Selenide.$;
 @ParametersAreNonnullByDefault
 public class FriendsPage extends BasePage<FriendsPage> {
 
+    public static final String URL = CFG.frontUrl() + "people/friends";
+
     private final SelenideElement friendsTab = $("#simple-tabpanel-friends");
     private final SelenideElement noFriendsMessage = friendsTab.$(byText("There are no users yet"));
     private final ElementsCollection friendsTableRows = $("#friends").$$("tr");

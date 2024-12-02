@@ -2,6 +2,7 @@ package guru.qa.niffler.test.web;
 
 import guru.qa.niffler.condition.Bubble;
 import guru.qa.niffler.condition.Color;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.ScreenShotTest;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.Spending;
@@ -14,21 +15,22 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Date;
 
+import static com.codeborne.selenide.Selenide.open;
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
 public class SpendingWebTest extends TestBaseWeb {
 
     @User
+    @ApiLogin
     @Test
-    void createSpendingTest(UserJson user) {
+    void createSpendingTest() {
         String amount = String.valueOf(randomAmount());
         CurrencyValues currency = randomCurrency();
         String category = randomCategoryName();
         Date date = randomSpendingDate();
         String description = randomSpendingDescription();
 
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toAddSpendingPage();
+        open(newSpendingPage.URL);
         newSpendingPage.setAmount(amount);
         newSpendingPage.setCurrency(currency);
         newSpendingPage.setCategory(category);
@@ -49,6 +51,7 @@ public class SpendingWebTest extends TestBaseWeb {
                             description = "Cinema",
                             amount = 11500)}
     )
+    @ApiLogin
     @Test
     void editSpendingTest(UserJson user, BufferedImage expected) throws IOException {
         String actualDescription = user.testData().spendings().getFirst().description();
@@ -57,8 +60,8 @@ public class SpendingWebTest extends TestBaseWeb {
         final Double newAmount = 12300.0;
         final String newAmountStr = String.valueOf(newAmount.intValue());
 
-        loginPage.login(user.username(), user.testData().password())
-                .getSpendingTable().toEditSpendingPage(actualDescription)
+        open(mainPage.URL);
+        mainPage.getSpendingTable().toEditSpendingPage(actualDescription)
                 .setNewSpendingAmount(newAmountStr)
                 .setNewSpendingDescription(newDescription)
                 .save();
@@ -83,9 +86,9 @@ public class SpendingWebTest extends TestBaseWeb {
                     amount = 79990
             )
     )
+    @ApiLogin
     void checkArchiveStatComponentTest(UserJson user, BufferedImage expected) throws IOException {
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toProfilePage();
+        open(profilePage.URL);
         profilePage.archiveCategory(user.testData().spendings().getFirst().category().name());
         profilePage.getHeader().toMainPage();
         mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
@@ -102,8 +105,9 @@ public class SpendingWebTest extends TestBaseWeb {
                     amount = 350000
             )
     )
+    @ApiLogin
     void deleteSpendingTest(UserJson user, BufferedImage expected) throws IOException {
-        loginPage.login(user.username(), user.testData().password());
+        open(mainPage.URL);
         mainPage.getSpendingTable().deleteSpending(user.testData().spendings().getFirst().description());
         mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
     }
@@ -120,13 +124,13 @@ public class SpendingWebTest extends TestBaseWeb {
                             amount = 11500)
             }
     )
+    @ApiLogin
     void fullSpendingsTableTest(UserJson user) {
-        loginPage.login(user.username(), user.testData().password());
+        open(mainPage.URL);
         SpendJson expectedSpend = user.testData().spendings().get(0);
         SpendJson expectedSpend2 = user.testData().spendings().get(1);
         mainPage.getSpendingTable().checkTable(expectedSpend, expectedSpend2);
     }
-
 
 }
 

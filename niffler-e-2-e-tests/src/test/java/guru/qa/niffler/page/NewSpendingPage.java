@@ -19,6 +19,8 @@ import static com.codeborne.selenide.Selenide.$$;
 @ParametersAreNonnullByDefault
 public class NewSpendingPage extends BasePage<NewSpendingPage> {
 
+    public static final String URL = CFG.frontUrl() + "spending";
+
     private final SelenideElement amountInput = $("#amount");
     private final SelenideElement descriptionInput = $("#description");
     private final SelenideElement currencyDropdown = $("#currency");

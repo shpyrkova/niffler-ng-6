@@ -6,10 +6,14 @@ import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
 import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.Token;
+import guru.qa.niffler.model.rest.CategoryJson;
+import guru.qa.niffler.model.rest.SpendJson;
 import guru.qa.niffler.model.rest.TestData;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.page.MainPage;
 import guru.qa.niffler.service.impl.AuthApiClient;
+import guru.qa.niffler.service.impl.SpendApiClient;
+import guru.qa.niffler.service.impl.UsersApiClient;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -17,6 +21,8 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.openqa.selenium.Cookie;
+
+import java.util.List;
 
 
 public class ApiLoginExtension implements BeforeTestExecutionCallback, ParameterResolver {
@@ -52,17 +58,32 @@ public class ApiLoginExtension implements BeforeTestExecutionCallback, Parameter
                         }
                         userToLogin = userFromUserExtension;
                     } else {
-                        UserJson fakeUser = new UserJson(
+                        // если юзер передан в @ApiLogin, получаем его данные
+                        UserJson user = new UserJson(
                                 apiLogin.username(),
                                 new TestData(
                                         apiLogin.password()
                                 )
                         );
+                        // получаем все категории и траты
+                        SpendApiClient spendApiClient = new SpendApiClient();
+                        List<CategoryJson> categories = spendApiClient.getAllCategories(user);
+                        user.testData().categories().addAll(categories);
+                        List<SpendJson> spendings = spendApiClient.getAllSpends(user);
+                        user.testData().spendings().addAll(spendings);
+                        // получаем всех друзей и приглашения
+                        UsersApiClient usersApiClient = new UsersApiClient();
+                        List<UserJson> friends = usersApiClient.getAllFriends(user);
+                        user.testData().friends().addAll(friends);
+                        List<UserJson> incomeInvitations = usersApiClient.getAllIncomeInvitations(user);
+                        user.testData().incomeInvitations().addAll(incomeInvitations);
+                        List<UserJson> outcomeInvitations = usersApiClient.getAllOutcomeInvitations(user);
+                        user.testData().outcomeInvitations().addAll(outcomeInvitations);
                         if (userFromUserExtension != null) {
                             throw new IllegalStateException("@User must not be present in case that @ApiLogin contains username or password!");
                         }
-                        UserExtension.setUser(fakeUser);
-                        userToLogin = fakeUser;
+                        UserExtension.setUser(user);
+                        userToLogin = user;
                     }
 
                     final String token = authApiClient.login(

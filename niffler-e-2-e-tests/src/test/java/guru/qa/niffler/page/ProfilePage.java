@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ParametersAreNonnullByDefault
 public class ProfilePage extends BasePage<ProfilePage> {
 
+    public static final String URL = CFG.frontUrl() + "profile";
+
     private final SelenideElement avatarInput = $("#image__input");
     private final SelenideElement avatarImg = $(".MuiAvatar-img");
     private final SelenideElement usernameInput = $("#username");

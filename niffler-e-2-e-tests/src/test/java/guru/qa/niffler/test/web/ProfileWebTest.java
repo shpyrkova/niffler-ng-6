@@ -16,12 +16,11 @@ import static guru.qa.niffler.utils.RandomDataUtils.*;
 public class ProfileWebTest extends TestBaseWeb {
 
     @User(categories = @Category(archived = false))
-    @ApiLogin
+    @ApiLogin()
     @Test
     void archiveCategoryTest(UserJson user) {
         String categoryName = user.testData().categories().getFirst().name();
-        open(mainPage.URL);
-        mainPage.getHeader().toProfilePage();
+        open(profilePage.URL);
         profilePage.archiveCategory(categoryName);
         profilePage.categoryDeletedMessageHeaderShouldBePresent(categoryName);
         profilePage.checkCategoryVisibility(categoryName, false);
@@ -30,12 +29,11 @@ public class ProfileWebTest extends TestBaseWeb {
     }
 
     @User(categories = @Category(archived = true))
+    @ApiLogin
     @Test
     void restoreFromArchiveCategoryTest(UserJson user) {
         String categoryName = user.testData().categories().getFirst().name();
-
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toProfilePage();
+        open(profilePage.URL);
         profilePage.clickShowArchivedText();
         profilePage.restoreFromArchiveCategory(categoryName);
         profilePage.clickShowArchivedText();
@@ -43,11 +41,11 @@ public class ProfileWebTest extends TestBaseWeb {
     }
 
     @User
+    @ApiLogin
     @Test
-    void editProfileTest(UserJson user) {
+    void editProfileTest() {
         String name = randomName();
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toProfilePage();
+        open(profilePage.URL);
         profilePage.setName(name);
         profilePage.clickSaveChangesButton();
         profilePage.checkThatProfileUpdateMessageIsPresent();
@@ -55,10 +53,10 @@ public class ProfileWebTest extends TestBaseWeb {
     }
 
     @ScreenShotTest(value = "img/expected-avatar-test.png", rewriteExpected = true)
+    @ApiLogin
     @User
-    void addAvatarTest(UserJson user, BufferedImage expected) throws IOException {
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toProfilePage();
+    void addAvatarTest(BufferedImage expected) throws IOException {
+        open(profilePage.URL);
         profilePage.uploadAvatar("img/renoire.jpeg");
         profilePage.clickSaveChangesButton();
         profilePage.checkThatProfileUpdateMessageIsPresent();
