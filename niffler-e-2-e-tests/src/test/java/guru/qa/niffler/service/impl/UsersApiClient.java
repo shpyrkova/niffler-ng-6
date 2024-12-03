@@ -10,7 +10,7 @@ import guru.qa.niffler.model.rest.TestData;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import io.qameta.allure.Step;
-import jaxb.userdata.FriendState;
+import guru.qa.niffler.model.rest.FriendState;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
