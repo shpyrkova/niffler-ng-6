@@ -22,7 +22,7 @@ public class GatewayApiV2Client extends RestClient {
         this.gatewayV2Api = create(GatewayV2Api.class);
     }
 
-    @Step("send /api/friends/all GET request to niffler-gateway")
+    @Step("Отправить запрос GET /api/v2/friends/all к niffler-gateway")
     public RestResponsePage<UserJson> allFriends(@Nonnull String bearerToken,
                                                  @Nullable String searchQuery,
                                                  int page,
@@ -36,4 +36,20 @@ public class GatewayApiV2Client extends RestClient {
         assertEquals(200, response.code());
         return response.body();
     }
+
+    @Step("Отправить запрос GET /api/v2/users/all к niffler-gateway")
+    public RestResponsePage<UserJson> allUsers(@Nonnull String bearerToken,
+                                                 @Nullable String searchQuery,
+                                                 int page,
+                                                 @Nullable String sort) {
+        final Response<RestResponsePage<UserJson>> response;
+        try {
+            response = gatewayV2Api.allUsers(bearerToken, searchQuery, page, sort).execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return response.body();
+    }
+
 }

@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,4 +41,51 @@ class UserControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.username").value("dima"));
   }
+
+  @Test
+  void allUsersEndpoint() throws Exception {
+    UserEntity currentUserEntity = new UserEntity();
+    currentUserEntity.setUsername("dasha");
+    currentUserEntity.setCurrency(CurrencyValues.RUB);
+    usersRepository.save(currentUserEntity);
+
+    UserEntity secondUserEntity = new UserEntity();
+    secondUserEntity.setUsername("igor");
+    secondUserEntity.setCurrency(CurrencyValues.RUB);
+    usersRepository.save(secondUserEntity);
+
+    mockMvc.perform(get("/internal/users/all")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("username", "dasha")
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].username").value("igor"));
+  }
+
+  @Test
+  void updateUserInfoEndpoint() throws Exception {
+    UserEntity userEntity = new UserEntity();
+    userEntity.setUsername("yana");
+    userEntity.setFullname("petrova");
+    userEntity.setCurrency(CurrencyValues.EUR);
+    usersRepository.save(userEntity);
+
+    String updatedUserJson = """
+        {
+            "username": "yana",
+            "fullname": "petrova-ivanova",
+            "currency": "KZT"
+        }
+        """;
+
+    mockMvc.perform(post("/internal/users/update")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(updatedUserJson)
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("yana"))
+            .andExpect(jsonPath("$.fullname").value("petrova-ivanova"))
+            .andExpect(jsonPath("$.currency").value("KZT"));
+  }
+
 }
