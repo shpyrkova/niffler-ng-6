@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import static com.codeborne.selenide.Selenide.open;
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
 public class ProfileWebTest extends TestBaseWeb {
@@ -20,7 +19,7 @@ public class ProfileWebTest extends TestBaseWeb {
     @Test
     void archiveCategoryTest(UserJson user) {
         String categoryName = user.testData().categories().getFirst().name();
-        open(profilePage.URL);
+        profilePage.open();
         profilePage.archiveCategory(categoryName);
         profilePage.categoryDeletedMessageHeaderShouldBePresent(categoryName);
         profilePage.checkCategoryVisibility(categoryName, false);
@@ -33,7 +32,7 @@ public class ProfileWebTest extends TestBaseWeb {
     @Test
     void restoreFromArchiveCategoryTest(UserJson user) {
         String categoryName = user.testData().categories().getFirst().name();
-        open(profilePage.URL);
+        profilePage.open();
         profilePage.clickShowArchivedText();
         profilePage.restoreFromArchiveCategory(categoryName);
         profilePage.clickShowArchivedText();
@@ -45,7 +44,7 @@ public class ProfileWebTest extends TestBaseWeb {
     @Test
     void editProfileTest() {
         String name = randomName();
-        open(profilePage.URL);
+        profilePage.open();
         profilePage.setName(name);
         profilePage.clickSaveChangesButton();
         profilePage.checkThatProfileUpdateMessageIsPresent();
@@ -56,7 +55,7 @@ public class ProfileWebTest extends TestBaseWeb {
     @ApiLogin
     @User
     void addAvatarTest(BufferedImage expected) throws IOException {
-        open(profilePage.URL);
+        profilePage.open();
         profilePage.uploadAvatar("img/renoire.jpeg");
         profilePage.clickSaveChangesButton();
         profilePage.checkThatProfileUpdateMessageIsPresent();

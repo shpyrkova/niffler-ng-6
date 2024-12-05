@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.page.component.SpendingTable;
@@ -26,6 +27,10 @@ public class MainPage extends BasePage<MainPage> {
 
     protected final SpendingTable spendingTable = new SpendingTable();
     protected final StatComponent statComponent = new StatComponent();
+
+    public void open() {
+        Selenide.open(URL);
+    }
 
     @Nonnull
     public Header getHeader() {

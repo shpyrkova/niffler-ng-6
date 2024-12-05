@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
@@ -28,6 +29,10 @@ public class FriendsPage extends BasePage<FriendsPage> {
     private final SelenideElement dialog = $("div[role='dialog']");
 
     protected final SearchField searchField = new SearchField();
+
+    public void open() {
+        Selenide.open(URL);
+    }
 
     @Nonnull
     private SearchField getSearchField() {

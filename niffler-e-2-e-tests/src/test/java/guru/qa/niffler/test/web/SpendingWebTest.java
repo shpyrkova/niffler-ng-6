@@ -15,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Date;
 
-import static com.codeborne.selenide.Selenide.open;
 import static guru.qa.niffler.utils.RandomDataUtils.*;
 
 public class SpendingWebTest extends TestBaseWeb {
@@ -30,7 +29,7 @@ public class SpendingWebTest extends TestBaseWeb {
         Date date = randomSpendingDate();
         String description = randomSpendingDescription();
 
-        open(newSpendingPage.URL);
+        newSpendingPage.open();
         newSpendingPage.setAmount(amount);
         newSpendingPage.setCurrency(currency);
         newSpendingPage.setCategory(category);
@@ -60,7 +59,7 @@ public class SpendingWebTest extends TestBaseWeb {
         final Double newAmount = 12300.0;
         final String newAmountStr = String.valueOf(newAmount.intValue());
 
-        open(mainPage.URL);
+        mainPage.open();
         mainPage.getSpendingTable().toEditSpendingPage(actualDescription)
                 .setNewSpendingAmount(newAmountStr)
                 .setNewSpendingDescription(newDescription)
@@ -88,7 +87,7 @@ public class SpendingWebTest extends TestBaseWeb {
     )
     @ApiLogin
     void checkArchiveStatComponentTest(UserJson user, BufferedImage expected) throws IOException {
-        open(profilePage.URL);
+        profilePage.open();
         profilePage.archiveCategory(user.testData().spendings().getFirst().category().name());
         profilePage.getHeader().toMainPage();
         mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
@@ -107,7 +106,7 @@ public class SpendingWebTest extends TestBaseWeb {
     )
     @ApiLogin
     void deleteSpendingTest(UserJson user, BufferedImage expected) throws IOException {
-        open(mainPage.URL);
+        mainPage.open();
         mainPage.getSpendingTable().deleteSpending(user.testData().spendings().getFirst().description());
         mainPage.getStatComponent().checkThatStatPieChartAsExpected(expected);
     }
@@ -126,7 +125,7 @@ public class SpendingWebTest extends TestBaseWeb {
     )
     @ApiLogin
     void fullSpendingsTableTest(UserJson user) {
-        open(mainPage.URL);
+        mainPage.open();
         SpendJson expectedSpend = user.testData().spendings().get(0);
         SpendJson expectedSpend2 = user.testData().spendings().get(1);
         mainPage.getSpendingTable().checkTable(expectedSpend, expectedSpend2);

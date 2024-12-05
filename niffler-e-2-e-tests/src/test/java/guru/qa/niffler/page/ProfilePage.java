@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.utils.ScreenDiffResult;
@@ -35,6 +36,10 @@ public class ProfilePage extends BasePage<ProfilePage> {
 
     private SelenideElement categoryDeletedMessage(String name) {
         return $(byText("Category " + name + " is archived"));
+    }
+
+    public void open() {
+        Selenide.open(URL);
     }
 
     @Nonnull

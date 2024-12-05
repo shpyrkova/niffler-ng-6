@@ -31,6 +31,9 @@ public class ApiLoginExtension implements BeforeTestExecutionCallback, Parameter
     public static final ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(ApiLoginExtension.class);
 
     private final AuthApiClient authApiClient = new AuthApiClient();
+    private final SpendApiClient spendApiClient = new SpendApiClient();
+    private final UsersApiClient usersApiClient = new UsersApiClient();
+
     private final boolean setupBrowser;
 
     private ApiLoginExtension(boolean setupBrowser) {
@@ -66,13 +69,11 @@ public class ApiLoginExtension implements BeforeTestExecutionCallback, Parameter
                                 )
                         );
                         // получаем все категории и траты
-                        SpendApiClient spendApiClient = new SpendApiClient();
                         List<CategoryJson> categories = spendApiClient.getAllCategories(user);
                         user.testData().categories().addAll(categories);
                         List<SpendJson> spendings = spendApiClient.getAllSpends(user);
                         user.testData().spendings().addAll(spendings);
                         // получаем всех друзей и приглашения
-                        UsersApiClient usersApiClient = new UsersApiClient();
                         List<UserJson> friends = usersApiClient.getAllFriends(user);
                         user.testData().friends().addAll(friends);
                         List<UserJson> incomeInvitations = usersApiClient.getAllIncomeInvitations(user);

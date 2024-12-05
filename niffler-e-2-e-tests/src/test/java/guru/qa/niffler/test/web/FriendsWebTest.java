@@ -5,15 +5,13 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.model.rest.UserJson;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Selenide.open;
-
 public class FriendsWebTest extends TestBaseWeb {
 
     @User
     @ApiLogin
     @Test
-    void friendsTableShouldBeEmptyForNewUserTest(UserJson user) {
-        open(friendsPage.URL);
+    void friendsTableShouldBeEmptyForNewUserTest() {
+        friendsPage.open();
         friendsPage.checkThatNoFriendsMessageIsPresent();
     }
 
@@ -21,8 +19,7 @@ public class FriendsWebTest extends TestBaseWeb {
     @ApiLogin
     @Test
     void friendShouldBePresentInFriendsTableTest(UserJson user) {
-        open(friendsPage.URL);
-        System.out.println(user);
+        friendsPage.open();
         friendsPage.checkThatFriendRowIsPresent(user.testData().friendsUsernames()[0]);
     }
 
@@ -30,8 +27,7 @@ public class FriendsWebTest extends TestBaseWeb {
     @ApiLogin
     @Test
     void incomeInvitationBePresentInFriendsTableTest(UserJson user) {
-        open(friendsPage.URL);
-        System.out.println(user);
+        friendsPage.open();
         friendsPage.checkThatIncomeRequestIsPresent(user.testData().incomeInvitationsUsernames()[0]);
     }
 
@@ -39,7 +35,7 @@ public class FriendsWebTest extends TestBaseWeb {
     @ApiLogin
     @Test
     void outcomeInvitationBePresentInAllPeoplesTableTest(UserJson user) {
-        open(friendsPage.URL);
+        friendsPage.open();
         friendsPage.clickAllPeopleTab();
         peoplePage.checkThatOutcomeRequestIsPresent(user.testData().outcomeInvitationsUsernames()[0]);
     }
@@ -49,7 +45,7 @@ public class FriendsWebTest extends TestBaseWeb {
     @Test
     void acceptIncomeInvitationTest(UserJson user) {
         String requesterUsername = user.testData().incomeInvitationsUsernames()[0];
-        open(friendsPage.URL);
+        friendsPage.open();
         friendsPage.acceptIncomeInvitation(requesterUsername);
         friendsPage.checkThatIncomeRequestIsAbsent(requesterUsername);
         friendsPage.checkThatFriendRowIsPresent(requesterUsername);
@@ -60,7 +56,7 @@ public class FriendsWebTest extends TestBaseWeb {
     @Test
     void declineIncomeInvitationTest(UserJson user) {
         String requesterUsername = user.testData().incomeInvitationsUsernames()[0];
-        open(friendsPage.URL);
+        friendsPage.open();
         friendsPage.declineIncomeInvitation(requesterUsername);
         friendsPage.checkThatIncomeRequestIsAbsent(requesterUsername);
     }
