@@ -1,78 +1,63 @@
 package guru.qa.niffler.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import guru.qa.niffler.api.AuthApi;
+import guru.qa.niffler.api.core.CodeInterceptor;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
+import guru.qa.niffler.utils.OAuthUtils;
 import lombok.SneakyThrows;
 import retrofit2.Response;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
-import static guru.qa.niffler.utils.OauthUtils.generateCodeChallenge;
-import static guru.qa.niffler.utils.OauthUtils.generateCodeVerifier;
-
-public class AuthApiClient {
+public class AuthApiClient extends RestClient {
 
     private static final Config CFG = Config.getInstance();
-    private final AuthApi authApi = new RestClient.EmptyClient(CFG.authUrl()).create(AuthApi.class);
+    private final AuthApi authApi;
 
-    private final String clientId = "client";
-    private final String redirectUri = CFG.frontUrl() + "authorized";
-    private final String codeVerifier = generateCodeVerifier();
-    private final String codeChallenge;
-
-    {
-        try {
-            codeChallenge = generateCodeChallenge(codeVerifier);
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+    public AuthApiClient() {
+        super(CFG.authUrl(), true, new CodeInterceptor());
+        this.authApi = create(AuthApi.class);
     }
+
+    private static final String clientId = "client";
+    private static final String redirectUri = CFG.frontUrl() + "authorized";
+    private static final String responseTyoe = "code";
+    private static final String scope = "openid";
+    private static final String codeChallengeMethod = "S256";
+    private static final String grantType = "authorization_code";
+
 
     @SneakyThrows
-    public String authorize() {
-        final String responseType = "code";
-        final String scope = "openid";
-        final String codeChallengeMethod = "S256";
-        final Response<Response<Void>> response;
-        try {
-            response = authApi
-                    .authorize(responseType, clientId, scope, redirectUri, codeChallenge, codeChallengeMethod)
-                    .execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-        String location = response.headers().get("Location");
-        return StringUtils.substringAfter(location, "code=");
-    }
+    public String login(String username, String password) {
+        final String codeVerifier = OAuthUtils.generateCodeVerifier();
+        final String codeChallenge = OAuthUtils.generateCodeChallenge(codeVerifier);
 
-    @SneakyThrows
-    public String token(String code) {
-        final Response<JsonNode> response;
-        final String grantType = "authorization_code";
-        try {
-            response = authApi.token(clientId, redirectUri, grantType, code, codeVerifier)
-                    .execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-        return response.body().get("id_token").toString();
-    }
+        authApi.authorize(
+                responseTyoe,
+                clientId,
+                scope,
+                redirectUri,
+                codeChallenge,
+                codeChallengeMethod
+        ).execute();
 
-    @SneakyThrows
-    public void login(String username,
-                      String password) {
-        try {
-            authApi.login(username, password, ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN"))
-                    .execute();
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-    }
+        authApi.login(
+                username,
+                password,
+                ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN")
+        ).execute();
 
+        Response<JsonNode> tokenResponse = authApi.token(
+                ApiLoginExtension.getCode(),
+                redirectUri,
+                clientId,
+                codeVerifier,
+                grantType
+        ).execute();
+
+        return tokenResponse.body().get("id_token").asText();
+    }
 }

@@ -6,18 +6,22 @@ import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.api.core.RestClient.EmptyClient;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.model.TestData;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.TestData;
+import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import io.qameta.allure.Step;
+import jaxb.userdata.FriendState;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static guru.qa.niffler.utils.RandomDataUtils.randomUsername;
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ParametersAreNonnullByDefault
@@ -142,4 +146,47 @@ public class UsersApiClient implements UsersClient {
             }
         }
     }
+
+    @Step("Получить всех друзей по username")
+    public List<UserJson> getAllFriends(UserJson user) {
+        final Response<List<UserJson>> response;
+        try {
+            response = userdataApi.friends(user.username(), null)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return requireNonNull(response.body().stream()
+                .filter(u -> FriendState.FRIEND.equals(u.friendState())).collect(Collectors.toList()));
+    }
+
+    @Step("Получить все входящие приглашения по username")
+    public List<UserJson> getAllIncomeInvitations(UserJson user) {
+        final Response<List<UserJson>> response;
+        try {
+            response = userdataApi.friends(user.username(), null)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return requireNonNull(response.body().stream()
+                .filter(u -> FriendState.INVITE_RECEIVED.equals(u.friendState())).collect(Collectors.toList()));
+    }
+
+    @Step("Получить все исходящие приглашения по username")
+    public List<UserJson> getAllOutcomeInvitations(UserJson user) {
+        final Response<List<UserJson>> response;
+        try {
+            response = userdataApi.allUsers(user.username(), null)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return requireNonNull(response.body().stream()
+                .filter(u -> FriendState.INVITE_SENT.equals(u.friendState())).collect(Collectors.toList()));
+    }
+
 }

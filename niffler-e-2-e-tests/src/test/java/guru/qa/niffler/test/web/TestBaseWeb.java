@@ -1,9 +1,11 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.jupiter.annotation.meta.WebTest;
 import guru.qa.niffler.jupiter.extension.BrowserExtension;
 import guru.qa.niffler.page.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+@WebTest
 @ExtendWith(BrowserExtension.class)
 public class TestBaseWeb {
 

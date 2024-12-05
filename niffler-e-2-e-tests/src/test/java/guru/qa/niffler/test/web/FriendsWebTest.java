@@ -1,60 +1,62 @@
 package guru.qa.niffler.test.web;
 
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.User;
-import guru.qa.niffler.model.UserJson;
+import guru.qa.niffler.model.rest.UserJson;
 import org.junit.jupiter.api.Test;
 
 public class FriendsWebTest extends TestBaseWeb {
 
     @User
+    @ApiLogin
     @Test
-    void friendsTableShouldBeEmptyForNewUserTest(UserJson user) {
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toFriendsPage();
+    void friendsTableShouldBeEmptyForNewUserTest() {
+        friendsPage.open();
         friendsPage.checkThatNoFriendsMessageIsPresent();
     }
 
     @User(friends = 1)
+    @ApiLogin
     @Test
     void friendShouldBePresentInFriendsTableTest(UserJson user) {
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toFriendsPage();
+        friendsPage.open();
         friendsPage.checkThatFriendRowIsPresent(user.testData().friendsUsernames()[0]);
     }
 
     @User(incomeInvitations = 1)
+    @ApiLogin
     @Test
     void incomeInvitationBePresentInFriendsTableTest(UserJson user) {
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toFriendsPage();
+        friendsPage.open();
         friendsPage.checkThatIncomeRequestIsPresent(user.testData().incomeInvitationsUsernames()[0]);
     }
 
     @User(outcomeInvitations = 1)
+    @ApiLogin
     @Test
     void outcomeInvitationBePresentInAllPeoplesTableTest(UserJson user) {
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toAllPeoplesPage();
+        friendsPage.open();
+        friendsPage.clickAllPeopleTab();
         peoplePage.checkThatOutcomeRequestIsPresent(user.testData().outcomeInvitationsUsernames()[0]);
     }
 
     @User(incomeInvitations = 1)
+    @ApiLogin
     @Test
     void acceptIncomeInvitationTest(UserJson user) {
         String requesterUsername = user.testData().incomeInvitationsUsernames()[0];
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toFriendsPage();
+        friendsPage.open();
         friendsPage.acceptIncomeInvitation(requesterUsername);
         friendsPage.checkThatIncomeRequestIsAbsent(requesterUsername);
         friendsPage.checkThatFriendRowIsPresent(requesterUsername);
     }
 
     @User(incomeInvitations = 1)
+    @ApiLogin
     @Test
     void declineIncomeInvitationTest(UserJson user) {
         String requesterUsername = user.testData().incomeInvitationsUsernames()[0];
-        loginPage.login(user.username(), user.testData().password());
-        mainPage.getHeader().toFriendsPage();
+        friendsPage.open();
         friendsPage.declineIncomeInvitation(requesterUsername);
         friendsPage.checkThatIncomeRequestIsAbsent(requesterUsername);
     }

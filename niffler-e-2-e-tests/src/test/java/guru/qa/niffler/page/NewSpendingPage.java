@@ -1,8 +1,9 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.rest.CurrencyValues;
 import guru.qa.niffler.page.component.Calendar;
 import guru.qa.niffler.page.component.Header;
 import io.qameta.allure.Step;
@@ -19,6 +20,8 @@ import static com.codeborne.selenide.Selenide.$$;
 @ParametersAreNonnullByDefault
 public class NewSpendingPage extends BasePage<NewSpendingPage> {
 
+    public static final String URL = CFG.frontUrl() + "spending";
+
     private final SelenideElement amountInput = $("#amount");
     private final SelenideElement descriptionInput = $("#description");
     private final SelenideElement currencyDropdown = $("#currency");
@@ -27,6 +30,10 @@ public class NewSpendingPage extends BasePage<NewSpendingPage> {
     private final SelenideElement addButton = $("#save");
 
     protected  final Calendar calendar = new Calendar();
+
+    public void open() {
+        Selenide.open(URL);
+    }
 
     @Nonnull
     public Header getHeader() {

@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.Header;
 import guru.qa.niffler.utils.ScreenDiffResult;
@@ -20,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ParametersAreNonnullByDefault
 public class ProfilePage extends BasePage<ProfilePage> {
 
+    public static final String URL = CFG.frontUrl() + "profile";
+
     private final SelenideElement avatarInput = $("#image__input");
     private final SelenideElement avatarImg = $(".MuiAvatar-img");
     private final SelenideElement usernameInput = $("#username");
@@ -33,6 +36,10 @@ public class ProfilePage extends BasePage<ProfilePage> {
 
     private SelenideElement categoryDeletedMessage(String name) {
         return $(byText("Category " + name + " is archived"));
+    }
+
+    public void open() {
+        Selenide.open(URL);
     }
 
     @Nonnull

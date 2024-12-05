@@ -1,7 +1,7 @@
 package guru.qa.niffler.utils;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.model.CurrencyValues;
+import guru.qa.niffler.model.rest.CurrencyValues;
 
 import javax.annotation.Nonnull;
 import java.util.Calendar;

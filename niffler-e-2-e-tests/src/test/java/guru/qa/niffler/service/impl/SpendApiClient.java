@@ -3,8 +3,9 @@ package guru.qa.niffler.service.impl;
 import guru.qa.niffler.api.SpendApi;
 import guru.qa.niffler.api.core.RestClient;
 import guru.qa.niffler.config.Config;
-import guru.qa.niffler.model.CategoryJson;
-import guru.qa.niffler.model.SpendJson;
+import guru.qa.niffler.model.rest.CategoryJson;
+import guru.qa.niffler.model.rest.SpendJson;
+import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.SpendClient;
 import io.qameta.allure.Step;
 import retrofit2.Response;
@@ -13,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import java.io.IOException;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,6 +72,32 @@ public class SpendApiClient implements SpendClient {
         final Response<CategoryJson> response;
         try {
             response = spendApi.editCategory(category)
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return requireNonNull(response.body());
+    }
+
+    @Step("Получить все категории по username")
+    public List<CategoryJson> getAllCategories(UserJson user) {
+        final Response<List<CategoryJson>> response;
+        try {
+            response = spendApi.getAllCategories(user.username())
+                    .execute();
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        assertEquals(200, response.code());
+        return requireNonNull(response.body());
+    }
+
+    @Step("Получить все траты по username")
+    public List<SpendJson> getAllSpends(UserJson user) {
+        final Response<List<SpendJson>> response;
+        try {
+            response = spendApi.allSpends(user.username(), null, null, null)
                     .execute();
         } catch (IOException e) {
             throw new AssertionError(e);

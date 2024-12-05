@@ -1,6 +1,9 @@
-package guru.qa.niffler.test.web;
+package guru.qa.niffler.test.fake;
 
-import guru.qa.niffler.model.*;
+import guru.qa.niffler.model.rest.CategoryJson;
+import guru.qa.niffler.model.rest.CurrencyValues;
+import guru.qa.niffler.model.rest.SpendJson;
+import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.impl.SpendDbClient;
 import guru.qa.niffler.service.impl.UsersDbClient;
 import org.junit.jupiter.api.Disabled;

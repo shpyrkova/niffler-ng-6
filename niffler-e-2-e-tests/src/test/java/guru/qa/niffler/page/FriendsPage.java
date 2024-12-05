@@ -1,6 +1,7 @@
 package guru.qa.niffler.page;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.page.component.SearchField;
 import io.qameta.allure.Step;
@@ -17,6 +18,8 @@ import static com.codeborne.selenide.Selenide.$;
 @ParametersAreNonnullByDefault
 public class FriendsPage extends BasePage<FriendsPage> {
 
+    public static final String URL = CFG.frontUrl() + "people/friends";
+
     private final SelenideElement friendsTab = $("#simple-tabpanel-friends");
     private final SelenideElement noFriendsMessage = friendsTab.$(byText("There are no users yet"));
     private final ElementsCollection friendsTableRows = $("#friends").$$("tr");
@@ -26,6 +29,10 @@ public class FriendsPage extends BasePage<FriendsPage> {
     private final SelenideElement dialog = $("div[role='dialog']");
 
     protected final SearchField searchField = new SearchField();
+
+    public void open() {
+        Selenide.open(URL);
+    }
 
     @Nonnull
     private SearchField getSearchField() {
