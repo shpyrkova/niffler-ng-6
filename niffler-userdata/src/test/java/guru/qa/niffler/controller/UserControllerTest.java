@@ -1,5 +1,8 @@
 package guru.qa.niffler.controller;
 
+import guru.qa.niffler.data.CurrencyValues;
+import guru.qa.niffler.data.UserEntity;
+import guru.qa.niffler.data.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +26,9 @@ class UserControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private UserRepository usersRepository;
 
   @Sql(scripts = "/currentUserShouldBeReturned.sql")
   @Test
