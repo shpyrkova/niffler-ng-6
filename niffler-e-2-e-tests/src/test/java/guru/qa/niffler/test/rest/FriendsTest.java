@@ -6,7 +6,7 @@ import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.RestTest;
 import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
 import guru.qa.niffler.model.rest.FriendJson;
-import guru.qa.niffler.model.rest.FriendState;
+import guru.qa.niffler.model.rest.FriendshipStatus;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.impl.GatewayApiClient;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class FriendsTest {
         );
         assertThat(allFriends.size()).isEqualTo(1);
         assertThat(allFriends.getFirst().username()).isEqualTo(invitation.username());
-        assertThat(allFriends.getFirst().friendState()).isEqualTo(FriendState.FRIEND);
+        assertThat(allFriends.getFirst().friendshipStatus()).isEqualTo(FriendshipStatus.FRIEND);
     }
 
     @User(incomeInvitations = 2)

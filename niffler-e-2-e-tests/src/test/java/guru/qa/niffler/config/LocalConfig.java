@@ -37,12 +37,6 @@ enum LocalConfig implements Config {
 
   @Nonnull
   @Override
-  public String ghUrl() {
-    return "https://api.github.com/";
-  }
-
-  @Nonnull
-  @Override
   public String gatewayUrl() {
     return "http://127.0.0.1:8090/";
   }
@@ -59,15 +53,4 @@ enum LocalConfig implements Config {
     return "jdbc:postgresql://127.0.0.1:5432/niffler-userdata";
   }
 
-  @Nonnull
-  @Override
-  public String currencyUrl() {
-    return "http://127.0.0.1:8091";
-  }
-
-  @Nonnull
-  @Override
-  public String currencyJdbcUrl() {
-    return "jdbc:postgresql://127.0.0.1:5432/niffler-currency";
-  }
 }
