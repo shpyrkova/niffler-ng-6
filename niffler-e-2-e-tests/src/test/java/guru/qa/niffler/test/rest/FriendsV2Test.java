@@ -6,7 +6,7 @@ import guru.qa.niffler.jupiter.annotation.Token;
 import guru.qa.niffler.jupiter.annotation.User;
 import guru.qa.niffler.jupiter.annotation.meta.RestTest;
 import guru.qa.niffler.jupiter.extension.ApiLoginExtension;
-import guru.qa.niffler.model.rest.FriendState;
+import guru.qa.niffler.model.rest.FriendshipStatus;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.model.rest.pageable.RestResponsePage;
 import guru.qa.niffler.service.impl.AuthApiClient;
@@ -52,7 +52,7 @@ public class FriendsV2Test {
                 "username,ASC"
         );
         assertThat(allUsers.getContent().getFirst().username()).isEqualTo(outcomeInvitationUsername);
-        assertThat(allUsers.getContent().getFirst().friendState()).isEqualTo(FriendState.INVITE_SENT);
+        assertThat(allUsers.getContent().getFirst().friendshipStatus()).isEqualTo(FriendshipStatus.INVITE_SENT);
 
         // проверяем наличие входящего приглашения у второго юзера
         final AuthApiClient authApiClient = new AuthApiClient();
@@ -65,7 +65,7 @@ public class FriendsV2Test {
                 "username,ASC"
         );
         assertThat(allFriends.getContent().getFirst().username()).isEqualTo(user.username());
-        assertThat(allFriends.getContent().getFirst().friendState()).isEqualTo(FriendState.INVITE_RECEIVED);
+        assertThat(allFriends.getContent().getFirst().friendshipStatus()).isEqualTo(FriendshipStatus.INVITE_RECEIVED);
     }
 
 }

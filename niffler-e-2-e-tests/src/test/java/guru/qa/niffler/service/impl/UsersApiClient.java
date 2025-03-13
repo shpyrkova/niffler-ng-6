@@ -6,11 +6,11 @@ import guru.qa.niffler.api.UserdataApi;
 import guru.qa.niffler.api.core.RestClient.EmptyClient;
 import guru.qa.niffler.api.core.ThreadSafeCookieStore;
 import guru.qa.niffler.config.Config;
+import guru.qa.niffler.model.rest.FriendshipStatus;
 import guru.qa.niffler.model.rest.TestData;
 import guru.qa.niffler.model.rest.UserJson;
 import guru.qa.niffler.service.UsersClient;
 import io.qameta.allure.Step;
-import guru.qa.niffler.model.rest.FriendState;
 import retrofit2.Response;
 
 import javax.annotation.Nonnull;
@@ -158,7 +158,7 @@ public class UsersApiClient implements UsersClient {
         }
         assertEquals(200, response.code());
         return requireNonNull(response.body().stream()
-                .filter(u -> FriendState.FRIEND.equals(u.friendState())).collect(Collectors.toList()));
+                .filter(u -> FriendshipStatus.FRIEND.equals(u.friendshipStatus())).collect(Collectors.toList()));
     }
 
     @Step("Получить все входящие приглашения по username")
@@ -172,7 +172,7 @@ public class UsersApiClient implements UsersClient {
         }
         assertEquals(200, response.code());
         return requireNonNull(response.body().stream()
-                .filter(u -> FriendState.INVITE_RECEIVED.equals(u.friendState())).collect(Collectors.toList()));
+                .filter(u -> FriendshipStatus.INVITE_RECEIVED.equals(u.friendshipStatus())).collect(Collectors.toList()));
     }
 
     @Step("Получить все исходящие приглашения по username")
@@ -186,7 +186,7 @@ public class UsersApiClient implements UsersClient {
         }
         assertEquals(200, response.code());
         return requireNonNull(response.body().stream()
-                .filter(u -> FriendState.INVITE_SENT.equals(u.friendState())).collect(Collectors.toList()));
+                .filter(u -> FriendshipStatus.INVITE_SENT.equals(u.friendshipStatus())).collect(Collectors.toList()));
     }
 
 }
